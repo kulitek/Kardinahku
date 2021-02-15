@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 
 
 # SQLALCHEMY_DATABASE_URL = "mysql://root:@localhost:3306/codeburst"
-SQLALCHEMY_DATABASE_URL = "postgresql://root:1@localhost:5432/Kardinah_Mobile?gssencmode=disable"
+SQLALCHEMY_DATABASE_URL = "postgresql://root:root@localhost:5432/kardinahku?gssencmode=disable"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
