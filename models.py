@@ -19,6 +19,7 @@ class User(Base):
     deleted_at = Column(DateTime, nullable=True)
 
     pegawai = relationship("Pegawai", back_populates="user")
+    disposisi_1 = relationship("Masalah", back_populates="level_1")
 
 
 class Pegawai(Base):
@@ -38,6 +39,9 @@ class Pegawai(Base):
     deleted_at = Column(DateTime, nullable=True)
 
     user = relationship("User", back_populates="pegawai")
+    masalah_lv1 = relationship("Masalah", back_populates="disposisi_1")
+    masalah_lv2 = relationship("Masalah", back_populates="disposisi_2")
+    masalah_lv3 = relationship("Masalah", back_populates="disposisi_3")
 
 class KategoriMasalah(Base):
     __tablename__ = "kategori_masalah"
@@ -72,6 +76,11 @@ class JenisSarana(Base):
     id = Column(Integer, primary_key=True, index=True)
     nama = Column(String(30))
 
+    created_at = Column(DateTime, default=datetime.now)
+    update_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    done_at = Column(DateTime, nullable=True)
+    deleted_at = Column(DateTime, nullable=True)
+
     sarana = relationship("Sarana", back_populates="jenis")
 
 
@@ -86,6 +95,12 @@ class Sarana(Base):
     tinggi = Column(String(30), nullable=True)
 
     id_jenis = Column(Integer, ForeignKey("jenis_sarana.id"))
+
+    created_at = Column(DateTime, default=datetime.now)
+    update_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    deleted_at = Column(DateTime, nullable=True)
+
+    masalah = relationship("Masalah", back_populates="sarana")
     # id_kamar = Column(Integer, ForeignKey(""))
 
 
@@ -95,15 +110,24 @@ class Masalah(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     deskripsi = Column(Text)
+    id_user = Column(Integer, ForeignKey("users.id"))
     id_kategori_masalah = Column(Integer, ForeignKey("kategori_masalah.id"))
     id_ruangan = Column(Integer, ForeignKey("ruangan.id"))
     id_sarana = Column(Integer, ForeignKey("sarana.id"))
     selesai = Column(Boolean, default=False)
+    id_level_1 = Column(Integer, ForeignKey("users.id"))
+    id_level_2 = Column(Integer, ForeignKey("users.id"))
+    id_level_3 = Column(Integer, ForeignKey("users.id"))
+
 
     created_at = Column(DateTime, default=datetime.now)
     update_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     done_at = Column(DateTime, nullable=True)
     deleted_at = Column(DateTime, nullable=True)
 
-    ruangan = relationship("Ruangan", back_populates="masalah")
     kategori_masalah = relationship("KategoriMasalah", back_populates="masalah")
+    ruangan = relationship("Ruangan", back_populates="masalah_r")
+    sarana = relationship("Sarana", back_populates="masalah")
+    disposisi_1 = relationship("User", back_populates="masalah_lv1")
+    disposisi_2 = relationship("User", back_populates="masalah_lv2")
+    disposisi_3 = relationship("User", back_populates="masalah_lv3")
