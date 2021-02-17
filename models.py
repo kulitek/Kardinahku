@@ -19,7 +19,9 @@ class User(Base):
     deleted_at = Column(DateTime, nullable=True)
 
     pegawai = relationship("Pegawai", back_populates="user")
-    disposisi_1 = relationship("Masalah", back_populates="level_1")
+    masalah_lv1 = relationship("Masalah", back_populates="disposisi_1")
+    masalah_lv2 = relationship("Masalah", back_populates="disposisi_2")
+    masalah_lv3 = relationship("Masalah", back_populates="disposisi_3")
 
 
 class Pegawai(Base):
@@ -39,9 +41,7 @@ class Pegawai(Base):
     deleted_at = Column(DateTime, nullable=True)
 
     user = relationship("User", back_populates="pegawai")
-    masalah_lv1 = relationship("Masalah", back_populates="disposisi_1")
-    masalah_lv2 = relationship("Masalah", back_populates="disposisi_2")
-    masalah_lv3 = relationship("Masalah", back_populates="disposisi_3")
+
 
 class KategoriMasalah(Base):
     __tablename__ = "kategori_masalah"
@@ -69,6 +69,7 @@ class Ruangan(Base):
 
     instalasi = relationship("Instalasi", back_populates="ruangan")
     masalah = relationship("Masalah", back_populates="ruangan")
+    sarana = relationship("Sarana", back_populates="ruangan")
 
 class JenisSarana(Base):
     __tablename__ = "jenis_sarana"
@@ -93,6 +94,7 @@ class Sarana(Base):
     panjang = Column(String(30), nullable=True)
     lebar = Column(String(30), nullable=True)
     tinggi = Column(String(30), nullable=True)
+    id_ruangan = Column(Integer, ForeignKey("ruangan.id"), nullable=True)
 
     id_jenis = Column(Integer, ForeignKey("jenis_sarana.id"))
 
@@ -101,6 +103,7 @@ class Sarana(Base):
     deleted_at = Column(DateTime, nullable=True)
 
     masalah = relationship("Masalah", back_populates="sarana")
+    ruangan = relationship("Ruangan", back_populates="sarana")
     # id_kamar = Column(Integer, ForeignKey(""))
 
 
