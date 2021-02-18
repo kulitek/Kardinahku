@@ -51,6 +51,15 @@ class KategoriMasalah(Base):
 
     masalah = relationship("Masalah", back_populates="kategori_masalah")
 
+class KategoriTindakan(Base):
+    __tablename__ = "kategori_tindakan"
+
+    id = Column(Integer, primary_key=True, index=True)
+    kategori = Column(String(50))
+
+    tindakan = relationship("Tindakan", back_populates="kategori_tindakan")
+
+
 class Instalasi(Base):
     __tablename__ = "instalasi"
 
@@ -70,6 +79,7 @@ class Ruangan(Base):
     instalasi = relationship("Instalasi", back_populates="ruangan")
     masalah = relationship("Masalah", back_populates="ruangan")
     sarana = relationship("Sarana", back_populates="ruangan")
+    tindakan = relationship("Tindakan", back_populates="ruangan")
 
 class JenisSarana(Base):
     __tablename__ = "jenis_sarana"
@@ -95,7 +105,6 @@ class Sarana(Base):
     lebar = Column(String(30), nullable=True)
     tinggi = Column(String(30), nullable=True)
     id_ruangan = Column(Integer, ForeignKey("ruangan.id"), nullable=True)
-
     id_jenis = Column(Integer, ForeignKey("jenis_sarana.id"))
 
     created_at = Column(DateTime, default=datetime.now)
@@ -104,6 +113,7 @@ class Sarana(Base):
 
     masalah = relationship("Masalah", back_populates="sarana")
     ruangan = relationship("Ruangan", back_populates="sarana")
+    tindakan = relationship("Tindakan", back_populates="sarana")
     # id_kamar = Column(Integer, ForeignKey(""))
 
 
@@ -117,10 +127,11 @@ class Masalah(Base):
     id_kategori_masalah = Column(Integer, ForeignKey("kategori_masalah.id"))
     id_ruangan = Column(Integer, ForeignKey("ruangan.id"))
     id_sarana = Column(Integer, ForeignKey("sarana.id"))
-    selesai = Column(Boolean, default=False)
-    id_level_1 = Column(Integer, ForeignKey("users.id"))
-    id_level_2 = Column(Integer, ForeignKey("users.id"))
-    id_level_3 = Column(Integer, ForeignKey("users.id"))
+    id_level_1 = Column(Integer, ForeignKey("users.id"), nullable=True)
+    id_level_2 = Column(Integer, ForeignKey("users.id"), nullable=True)
+    id_level_3 = Column(Integer, ForeignKey("users.id"), nullable=True)
+    status = Column(Boolean, default=False)
+    foto = Column(String, nullable=True)
 
 
     created_at = Column(DateTime, default=datetime.now)
@@ -134,3 +145,23 @@ class Masalah(Base):
     disposisi_1 = relationship("User", back_populates="masalah_lv1")
     disposisi_2 = relationship("User", back_populates="masalah_lv2")
     disposisi_3 = relationship("User", back_populates="masalah_lv3")
+
+class Tindakan(Base):
+    __tablename__ = "tindakan"
+
+    id = Column(Integer, primary_key=True, index=True)
+    kondisi_awal = Column(String)
+    tindakan = Column(String)
+    id_kategori = Column(Integer, ForeignKey("kategori_tindakan.id"), nullable=True)
+    id_sarana = Column(Integer, ForeignKey("sarana.id"), nullable=True)
+    id_ruangan = Column(Integer, ForeignKey("ruangan.id"))
+    foto = Column(String, nullable=True)
+
+    created_at = Column(DateTime, default=datetime.now)
+    update_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    done_at = Column(DateTime, nullable=True)
+    deleted_at = Column(DateTime, nullable=True)
+
+    kategori_tindakan = relationship("KategoriTindakan", back_populates="tindakan")
+    sarana = relationship("Sarana", back_populates="tindakan")
+    ruangan = relationship("Ruangan", back_populates="tindakan")

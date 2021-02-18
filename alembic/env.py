@@ -16,7 +16,7 @@ sys.path.append(BASE_DIR)
 # ---------------------------------------------------- #
 # this will overwirte the ini-file sqlalchemy.url path
 # with the path given in the config of them main
-config.set_main_option("sqlalchemy.url", "postgresql://root:1@localhost:5432/Kardinah_Mobile?gssencmode=disable")
+config.set_main_option("sqlalchemy.url", "postgresql://root:1@localhost:5432/kardinahku?gssencmode=disable")
 # ---------------------------------------------------- #
 
 # Interpret the config file for Python logging.
