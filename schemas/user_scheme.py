@@ -25,6 +25,7 @@ class UserUpdate(UserBase):
 class User(UserBase):
     id: int
     email: Optional[str]
+    role: Optional[str]
 
 class Token(BaseModel):
     access_token: str

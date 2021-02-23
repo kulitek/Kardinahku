@@ -1,2 +1,63 @@
+import os, sys
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
+
 from sqlalchemy.orm import Session
-import ..models, ..schemas
+import models, schemas
+import bcrypt
+from datetime import datetime, timedelta
+
+
+def get_user_by_username(db: Session, username: str):
+    return db.query(models.User).filter(
+        models.User.username == username,
+        models.User.deleted_at == None).first()
+
+
+def get_user_by_id(db: Session, id: int):
+    return db.query(models.User).filter(
+        models.User.id == id,
+        models.User.deleted_at == None,).first()
+
+
+def create_user(db: Session, user: schemas.UserRegister):
+    hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
+    db_user = models.User(username=user.username,
+                          password=hashed_password.decode('utf-8'),
+                          # password=hashed_password, # for instead of postgresql
+                          id_pegawai=user.id_pegawai,
+                          email=user.email)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+
+def check_username_password(db: Session, user: schemas.UserAuthenticate):
+    db_user_info: models.User = get_user_by_username(db, username=user.username)
+    # print(db_user_info.password.decode('utf-8'))
+    return bcrypt.checkpw(user.password.encode('utf-8'), db_user_info.password.encode('utf-8'))
+
+
+
+
+
+import jwt
+
+secret_key = "0943lds0o98icjo34kr39fucvoi3n4lkjrf09sd8iocjvl3k4t0f98dusj3kl"
+algorithm = "HS256"
+
+
+def create_access_token(*, data:dict, expires_delta: timedelta=None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=algorithm)
+    return encoded_jwt
+
+def decode_access_token(*, data: str):
+    to_decode = data
+    return jwt.decode(to_decode, secret_key, algorithm=algorithm)
