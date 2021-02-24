@@ -13,6 +13,9 @@ class UserRegister(UserBase):
     id_pegawai: int
     role: Optional[str]
 
+class UserRegistered(UserBase):
+    message: str
+
 class UserLogin(UserBase):
     password: str
 
@@ -26,6 +29,7 @@ class User(UserBase):
     id: int
     email: Optional[str]
     role: Optional[str]
+    token: Optional[str]
 
 class Token(BaseModel):
     access_token: str

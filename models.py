@@ -12,7 +12,7 @@ class User(Base):
     email = Column(String, unique=True)
     is_active = Column(Boolean, default=False)
     role = Column(String, default='user')
-    id_pegawai = Column(Integer, ForeignKey("pegawai.id"))
+    id_pegawai = Column(String, ForeignKey("pegawai.id"))
     token = Column(String, nullable=True)
 
     created_at = Column(DateTime, default=datetime.now)
@@ -28,7 +28,7 @@ class User(Base):
 class Pegawai(Base):
     __tablename__ = "pegawai"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True, index=True)
     title = Column(String(150))
     nama_lengkap = Column(String(60))
     nama_panggilan = Column(String(60), nullable=True)

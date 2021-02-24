@@ -33,7 +33,7 @@ def create_user(db: Session, user: schemas.UserRegister):
     return db_user
 
 
-def check_username_password(db: Session, user: schemas.UserAuthenticate):
+def check_username_password(db: Session, user: schemas.UserLogin):
     db_user_info: models.User = get_user_by_username(db, username=user.username)
     # print(db_user_info.password.decode('utf-8'))
     return bcrypt.checkpw(user.password.encode('utf-8'), db_user_info.password.encode('utf-8'))
@@ -61,3 +61,15 @@ def create_access_token(*, data:dict, expires_delta: timedelta=None):
 def decode_access_token(*, data: str):
     to_decode = data
     return jwt.decode(to_decode, secret_key, algorithm=algorithm)
+
+def create_permanent_access_token(*, data:dict):
+    encoded_jwt = jwt.encode(data, secret_key, algorithm=algorithm)
+    return encoded_jwt
+
+
+def check_token(db: Session, username: str, token: str):
+    db_user: models.User = get_user_by_username(db, username=username)
+    if db_user.token == token:
+        return True
+    else:
+        return False
