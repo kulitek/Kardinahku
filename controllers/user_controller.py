@@ -3,7 +3,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
 
 from sqlalchemy.orm import Session
-import models, schemas
+import models
+import schemas.user_scheme  as schema
 import bcrypt
 from datetime import datetime, timedelta
 
@@ -20,7 +21,7 @@ def get_user_by_id(db: Session, id: int):
         models.User.deleted_at == None,).first()
 
 
-def create_user(db: Session, user: schemas.UserRegister):
+def create_user(db: Session, user: schema.UserRegister):
     hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
     db_user = models.User(username=user.username,
                           password=hashed_password.decode('utf-8'),
@@ -33,7 +34,7 @@ def create_user(db: Session, user: schemas.UserRegister):
     return db_user
 
 
-def check_username_password(db: Session, user: schemas.UserLogin):
+def check_username_password(db: Session, user: schema.UserLogin):
     db_user_info: models.User = get_user_by_username(db, username=user.username)
     # print(db_user_info.password.decode('utf-8'))
     return bcrypt.checkpw(user.password.encode('utf-8'), db_user_info.password.encode('utf-8'))

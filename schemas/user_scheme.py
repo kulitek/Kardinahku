@@ -27,6 +27,7 @@ class UserUpdate(UserBase):
 
 class User(UserBase):
     id: int
+    username: str
     email: Optional[str]
     role: Optional[str]
     token: Optional[str]

@@ -8,11 +8,13 @@ from typing import List, Any, Iterator
 from fastapi_pagination import Page, pagination_params
 from fastapi_pagination.ext.sqlalchemy import paginate
 
-import models, schemas, controllers
+import models
+from controllers.user_controller import *
+import schemas.user_scheme as schema
 from database import engine, SessionLocal
 
 
-model.Base.metadata.create_all(bind=engine)
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -24,8 +26,8 @@ def get_db():
     finally:
         db.close()
 
-@app.post("/login", response_model=schemas.Token)
-def login_user(user: schemas.UserLogin, db: Session = Depends(get_db)):
+@app.post("/login", response_model=schema.Token)
+def login_user(user: schema.UserLogin, db: Session = Depends(get_db)):
     db_user = get_user_by_username(db=db, username=user.username)
     if db_user is None:
         raise HTTPException(status_code=400, detail="Username tidak ditemukan.")
@@ -37,10 +39,10 @@ def login_user(user: schemas.UserLogin, db: Session = Depends(get_db)):
             access_token = create_permanent_access_token(data={"sub": user.username})
             return {"access_token": access_token, "token_type": "normal"}
 
-@app.get("/register", response_model=schemas.UserRegistered)
-def registering_user(user: schemas.Register, db: Session=Depends(get_db)):
+@app.post("/register", response_model=schema.User)
+def registering_user(user: schema.UserRegister, db: Session=Depends(get_db)):
     db_user = get_user_by_username(db=db, username=user.username)
     if db_user:
         raise HTTPException(status_code=400, detail="Username sudah terpakai.")
     else:
-    return create_user(db=db, user=user)
+        return create_user(db=db, user=user)
