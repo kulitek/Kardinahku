@@ -2,7 +2,7 @@ import uvicorn
 from fastapi.security import OAuth2PasswordBearer
 from jwt import PyJWTError
 from sqlalchemy.orm import Session
-from fastapi import Depends, FastAPI, HTTPException, logger
+from fastapi import Depends, FastAPI, HTTPException, logger, Request
 from starlette import status
 from typing import List, Any, Iterator
 from fastapi_pagination import Page, pagination_params
@@ -26,6 +26,10 @@ def get_db():
     finally:
         db.close()
 
+@app.get("/masalah")
+def get_current_user(request: Request):
+    print(request)
+
 @app.post("/login", response_model=schema.Token)
 def login_user(user: schema.UserLogin, db: Session = Depends(get_db)):
     db_user = get_user_by_username(db=db, username=user.username)
@@ -36,7 +40,7 @@ def login_user(user: schema.UserLogin, db: Session = Depends(get_db)):
         if is_password_correct is False:
             raise HTTPException(status_code=400, detail="Password salah.")
         else:
-            access_token = create_permanent_access_token(data={"sub": user.username})
+            access_token = create_permanent_access_token(data={"sub": user.username}, db=db)
             return {"access_token": access_token, "token_type": "normal"}
 
 @app.post("/register", response_model=schema.User)

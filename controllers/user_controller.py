@@ -49,7 +49,7 @@ secret_key = "0943lds0o98icjo34kr39fucvoi3n4lkjrf09sd8iocjvl3k4t0f98dusj3kl"
 algorithm = "HS256"
 
 
-def create_access_token(*, data:dict, expires_delta: timedelta=None):
+def create_access_token(*, data:dict, db: Session, expires_delta: timedelta=None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -57,7 +57,19 @@ def create_access_token(*, data:dict, expires_delta: timedelta=None):
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=algorithm)
+    db_user = get_user_by_username(db=db, username=str)
+    db_user.token = encoded_jwt
+    db.commit()
+    db.refresh(db_user)
     return encoded_jwt
+
+def is_token(db: Session, username: str, token: str):
+    db_user = get_user_by_username(db=db, username=username)
+    if db_user.token == token:
+        return db_user
+    else:
+        return None
+
 
 def decode_access_token(*, data: str):
     to_decode = data
@@ -65,6 +77,10 @@ def decode_access_token(*, data: str):
 
 def create_permanent_access_token(*, data:dict):
     encoded_jwt = jwt.encode(data, secret_key, algorithm=algorithm)
+    db_user = get_user_by_username(db=db, username=str)
+    db_user.token = encoded_jwt
+    db.commit()
+    db.refresh(db_user)
     return encoded_jwt
 
 
