@@ -72,12 +72,14 @@ def is_token(db: Session, username: str, token: str):
 
 
 def decode_access_token(*, data: str):
+    global secret_key, algorithm
     to_decode = data
-    return jwt.decode(to_decode, secret_key, algorithm=algorithm)
+    return jwt.decode(to_decode, secret_key, algorithms=algorithm)
 
-def create_permanent_access_token(*, data:dict):
+def create_permanent_access_token(*, data: dict, db: Session):
+    global secret_key
     encoded_jwt = jwt.encode(data, secret_key, algorithm=algorithm)
-    db_user = get_user_by_username(db=db, username=str)
+    db_user = get_user_by_username(db=db, username=data["sub"])
     db_user.token = encoded_jwt
     db.commit()
     db.refresh(db_user)

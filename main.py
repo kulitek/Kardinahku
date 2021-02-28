@@ -9,6 +9,7 @@ from fastapi_pagination import Page, pagination_params
 from fastapi_pagination.ext.sqlalchemy import paginate
 
 import models
+from datetime import datetime
 from controllers.user_controller import *
 import schemas.user_scheme as schema
 from database import engine, SessionLocal
@@ -26,9 +27,12 @@ def get_db():
     finally:
         db.close()
 
-@app.get("/masalah")
-def get_current_user(request: Request):
-    print(request)
+@app.get("/masalah/{token}")
+def get_current_user(token: str, request: Request, db: Session = Depends(get_db)) -> Any:
+    decoded_token = decode_access_token(data=token)
+    username = decoded_token["sub"] if decoded_token["sub"] else None
+    token = is_token(db=db, username=username, token=token)
+    return {"header": request.headers, "token": token}
 
 @app.post("/login", response_model=schema.Token)
 def login_user(user: schema.UserLogin, db: Session = Depends(get_db)):
