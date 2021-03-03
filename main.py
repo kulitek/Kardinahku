@@ -31,8 +31,11 @@ def get_db():
 def get_current_user(token: str, request: Request, db: Session = Depends(get_db)) -> Any:
     decoded_token = decode_access_token(data=token)
     username = decoded_token["sub"] if decoded_token["sub"] else None
-    token = is_token(db=db, username=username, token=token)
-    return {"header": request.headers, "token": token}
+    user = is_token(db=db, username=username, token=token)
+    if user:
+        return user
+    else:
+        raise HTTPException(status_code=400, detail="Not authenticated.")
 
 @app.post("/login", response_model=schema.Token)
 def login_user(user: schema.UserLogin, db: Session = Depends(get_db)):
