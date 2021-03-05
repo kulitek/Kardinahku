@@ -26,7 +26,7 @@ class UserUpdate(UserBase):
     is_active: Optional[bool]
 
 class User(UserBase):
-    id: int
+    id: Optional[int]
     email: Optional[str]
     role: Optional[str]
     id_pegawai: Optional[str]

@@ -2,7 +2,7 @@ import uvicorn
 from fastapi.security import OAuth2PasswordBearer
 from jwt import PyJWTError
 from sqlalchemy.orm import Session
-from fastapi import Depends, FastAPI, HTTPException, logger, Request
+from fastapi import Depends, FastAPI, HTTPException, logger, Request, File, UploadFile
 from starlette import status
 from typing import List, Any, Iterator
 from fastapi_pagination import Page, pagination_params
@@ -38,13 +38,22 @@ async def get_current_user(request: Request, db: Session = Depends(get_db)) -> A
         token = request.headers["Authorization"]
         decoded_token = decode_access_token(data=token)
         username = decoded_token["sub"] if decoded_token["sub"] else None
-    except PyJWTError:
+    except (PyJWTError, KeyError):
         raise credentials_exception
     user = is_token(db=db, username=username, token=token)
     print(user)
     if user is None:
         raise credentials_exception
     return user
+
+@app.post("/file/")
+async def create_file(file: bytes = File(...)):
+    # Thus use memory (RAM)
+    return {"file_size": len(file)}
+
+@app.post("/uploadfile/")
+async def create_upload_file(file: UploadFile = File(...)):
+    return {"filename": vars(file)}
 
 
 @app.get("/pegawai", response_model=Page[pegawai_schema.Pegawai], dependencies=[Depends(pagination_params)])
