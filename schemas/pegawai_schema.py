@@ -1,7 +1,7 @@
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
-from user_scheme import User
+from .user_schema import *
 
 
 class PegawaiBase(BaseModel):
@@ -11,7 +11,7 @@ class PegawaiBase(BaseModel):
     jenis_kelamin: str
     tanggal_lahir: datetime
 
-class PegawaiInfo(PegawaiBase):
+class Pegawai(PegawaiBase):
     id: str
 
     user: Optional[User]

@@ -14,6 +14,10 @@ def get_pegawai_by_id(db: Session, id: str):
         models.Pegawai.id == id,
         models.Pegawai.deleted_at == None,).first()
 
+def get_pegawai_all(db: Session):
+    return db.query(models.Pegawai).filter(
+        models.Pegawai.deleted_at == None)
+
 
 # def create_pegawai(db: Session, user: schema.UserRegister):
 #     hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
