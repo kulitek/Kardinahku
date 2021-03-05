@@ -3,9 +3,9 @@ from pydantic import BaseModel
 from datetime import datetime
 
 
-class UserBase(BaseModel):
+class RuangBase(BaseModel):
     _repr_hide = ['created_at', 'updated_at', 'deleted_at']
-    username: str
+    nama: str
 
 class UserRegister(UserBase):
     password: str
@@ -30,11 +30,7 @@ class User(UserBase):
     username: str
     email: Optional[str]
     role: Optional[str]
-    id_pegawai: str
     token: Optional[str]
-
-    class Config:
-        orm_mode = True
 
 class Token(BaseModel):
     access_token: str

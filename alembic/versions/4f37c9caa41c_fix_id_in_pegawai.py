@@ -1,8 +1,8 @@
-"""init table
+"""fix id in Pegawai
 
-Revision ID: 9533f0619edf
-Revises: 2451341c6f05
-Create Date: 2021-02-18 11:46:08.037565
+Revision ID: 4f37c9caa41c
+Revises: 
+Create Date: 2021-03-04 10:11:02.100097
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '9533f0619edf'
-down_revision = '2451341c6f05'
+revision = '4f37c9caa41c'
+down_revision = None
 branch_labels = None
 depends_on = None
 
@@ -47,12 +47,12 @@ def upgrade():
     )
     op.create_index(op.f('ix_kategori_tindakan_id'), 'kategori_tindakan', ['id'], unique=False)
     op.create_table('pegawai',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('title', sa.String(length=150), nullable=True),
+    sa.Column('id', sa.String(length=11), nullable=False),
     sa.Column('nama_lengkap', sa.String(length=60), nullable=True),
     sa.Column('nama_panggilan', sa.String(length=60), nullable=True),
     sa.Column('tempat_lahir', sa.String(length=20), nullable=True),
     sa.Column('tanggal_lahir', sa.DateTime(), nullable=True),
+    sa.Column('jenis_kelamin', sa.CHAR(length=1), nullable=True),
     sa.Column('no_hp', sa.String(length=16), nullable=True),
     sa.Column('no_wa', sa.String(length=16), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
@@ -76,7 +76,8 @@ def upgrade():
     sa.Column('email', sa.String(), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.Column('role', sa.String(), nullable=True),
-    sa.Column('id_pegawai', sa.Integer(), nullable=True),
+    sa.Column('id_pegawai', sa.String(), nullable=True),
+    sa.Column('token', sa.String(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('update_at', sa.DateTime(), nullable=True),
     sa.Column('deleted_at', sa.DateTime(), nullable=True),
@@ -110,9 +111,6 @@ def upgrade():
     sa.Column('id_kategori_masalah', sa.Integer(), nullable=True),
     sa.Column('id_ruangan', sa.Integer(), nullable=True),
     sa.Column('id_sarana', sa.Integer(), nullable=True),
-    sa.Column('id_level_1', sa.Integer(), nullable=True),
-    sa.Column('id_level_2', sa.Integer(), nullable=True),
-    sa.Column('id_level_3', sa.Integer(), nullable=True),
     sa.Column('status', sa.Boolean(), nullable=True),
     sa.Column('foto', sa.String(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
@@ -120,9 +118,6 @@ def upgrade():
     sa.Column('done_at', sa.DateTime(), nullable=True),
     sa.Column('deleted_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['id_kategori_masalah'], ['kategori_masalah.id'], ),
-    sa.ForeignKeyConstraint(['id_level_1'], ['users.id'], ),
-    sa.ForeignKeyConstraint(['id_level_2'], ['users.id'], ),
-    sa.ForeignKeyConstraint(['id_level_3'], ['users.id'], ),
     sa.ForeignKeyConstraint(['id_ruangan'], ['ruangan.id'], ),
     sa.ForeignKeyConstraint(['id_sarana'], ['sarana.id'], ),
     sa.ForeignKeyConstraint(['id_user'], ['users.id'], ),
@@ -133,6 +128,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('kondisi_awal', sa.String(), nullable=True),
     sa.Column('tindakan', sa.String(), nullable=True),
+    sa.Column('id_masalah', sa.Integer(), nullable=True),
     sa.Column('id_kategori', sa.Integer(), nullable=True),
     sa.Column('id_sarana', sa.Integer(), nullable=True),
     sa.Column('id_ruangan', sa.Integer(), nullable=True),
@@ -142,6 +138,7 @@ def upgrade():
     sa.Column('done_at', sa.DateTime(), nullable=True),
     sa.Column('deleted_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['id_kategori'], ['kategori_tindakan.id'], ),
+    sa.ForeignKeyConstraint(['id_masalah'], ['masalah.id'], ),
     sa.ForeignKeyConstraint(['id_ruangan'], ['ruangan.id'], ),
     sa.ForeignKeyConstraint(['id_sarana'], ['sarana.id'], ),
     sa.PrimaryKeyConstraint('id')

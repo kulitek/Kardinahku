@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, DateTime, CHAR
 from database import Base
 from datetime import datetime
 from sqlalchemy.orm import relationship
@@ -12,7 +12,7 @@ class User(Base):
     email = Column(String, unique=True)
     is_active = Column(Boolean, default=False)
     role = Column(String, default='user')
-    id_pegawai = Column(String, ForeignKey("pegawai.id"))
+    id_pegawai = Column(String(11), ForeignKey("pegawai.id"))
     token = Column(String, nullable=True)
 
     created_at = Column(DateTime, default=datetime.now)
@@ -28,12 +28,12 @@ class User(Base):
 class Pegawai(Base):
     __tablename__ = "pegawai"
 
-    id = Column(String, primary_key=True, index=True)
-    title = Column(String(150))
+    id = Column(String(11), primary_key=True, index=True)
     nama_lengkap = Column(String(60))
     nama_panggilan = Column(String(60), nullable=True)
     tempat_lahir = Column(String(20), nullable=True)
     tanggal_lahir = Column(DateTime, nullable=True)
+    jenis_kelamin = Column(CHAR(1), default='L')
     no_hp = Column(String(16), nullable=True)
     no_wa = Column(String(16), nullable=True)
 
