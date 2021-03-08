@@ -5,8 +5,7 @@ from sqlalchemy.orm import Session
 from fastapi import Depends, FastAPI, HTTPException, logger, Request, File, UploadFile, Form
 from starlette import status
 from typing import List, Any, Iterator
-from fastapi_pagination import Page, pagination_params
-from fastapi_pagination.ext.sqlalchemy import paginate
+# from fastapi_pagination import Page, add_pagination, paginate
 
 import models
 from datetime import datetime
@@ -57,9 +56,13 @@ async def create_upload_file(file: UploadFile = File(...)):
 
 
 
-@app.get("/pegawai", response_model=Page[pegawai_schema.Pegawai], dependencies=[Depends(pagination_params)])
+# @app.get("/pegawai", response_model=Page[pegawai_schema.Pegawai])
+# def get_pegawai(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
+#     return paginate(get_pegawai_all(db=db))
+
+@app.get("/pegawai")
 def get_pegawai(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
-    return paginate(get_pegawai_all(db=db))
+    return get_pegawai_all(db=db)
 
 
 @app.post("/login", response_model=user_schema.Token)

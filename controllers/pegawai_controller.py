@@ -16,7 +16,7 @@ def get_pegawai_by_id(db: Session, id: str):
 
 def get_pegawai_all(db: Session):
     return db.query(models.Pegawai).filter(
-        models.Pegawai.deleted_at == None)
+        models.Pegawai.deleted_at == None).all()
 
 
 # def create_pegawai(db: Session, user: schema.UserRegister):
