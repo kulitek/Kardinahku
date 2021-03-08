@@ -4,7 +4,7 @@ sys.path.append(BASE_DIR)
 
 from sqlalchemy.orm import Session
 import models
-import schemas.user_scheme  as schema
+import schemas.user_schema  as schema
 import bcrypt
 from datetime import datetime, timedelta
 
