@@ -33,6 +33,7 @@ async def get_current_user(request: Request, db: Session = Depends(get_db)) -> A
         detail = "Could not validate credentials",
         headers = {"WWW-Authenticate": "Authorization"}
     )
+    token = None
     try:
         token = request.headers["Authorization"]
         decoded_token = decode_access_token(data=token)
