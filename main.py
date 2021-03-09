@@ -66,22 +66,22 @@ def get_pegawai(db: Session = Depends(get_db), current_user: user_schema.User = 
     return get_pegawai_all(db=db)
 
 
-@app.post("/login", response_model=user_schema.Token)
-def login_user(user: user_schema.UserLogin, db: Session = Depends(get_db)):
-    db_user = get_user_by_username(db=db, username=user.username)
-    if db_user is None:
-        raise HTTPException(status_code=400, detail="Username tidak ditemukan.")
-    else:
-        is_password_correct = check_username_password(db, user)
-        if is_password_correct is False:
-            raise HTTPException(status_code=400, detail="Password salah.")
-        else:
-            access_token = create_permanent_access_token(data={"sub": user.username}, db=db)
-            return {"access_token": access_token,
-                    "username": user.username}
+# @app.post("/login", response_model=user_schema.Token)
+# def login_user(user: user_schema.UserLogin, db: Session = Depends(get_db)):
+#     db_user = get_user_by_username(db=db, username=user.username)
+#     if db_user is None:
+#         raise HTTPException(status_code=400, detail="Username tidak ditemukan.")
+#     else:
+#         is_password_correct = check_username_password(db, user)
+#         if is_password_correct is False:
+#             raise HTTPException(status_code=400, detail="Password salah.")
+#         else:
+#             access_token = create_permanent_access_token(data={"sub": user.username}, db=db)
+#             return {"access_token": access_token,
+#                     "username": user.username}
 
 
-@app.post("/login/form/", response_model=user_schema.Token)
+@app.post("/login/", response_model=user_schema.Token)
 def login_user(username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
     db_user = get_user_by_username(db=db, username=username)
     if db_user is None:
@@ -93,8 +93,9 @@ def login_user(username: str = Form(...), password: str = Form(...), db: Session
             raise HTTPException(status_code=400, detail="Password salah.")
         else:
             access_token = create_permanent_access_token(data={"sub": username}, db=db)
-            return {"access_token": access_token,
-                    "username": username}
+            return {"status": True, "message": "sukses", "data": vars(
+                    user_schema.UserRegistered(username=username,api_token=access_token)
+            )}
 
 @app.post("/register", response_model=user_schema.User)
 def registering_user(user: user_schema.UserRegister, db: Session=Depends(get_db)):
