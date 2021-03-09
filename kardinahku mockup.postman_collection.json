@@ -1,0 +1,568 @@
+{
+	"info": {
+		"_postman_id": "cf83a439-b949-4a46-b936-c12d89295533",
+		"name": "kardinahku mockup",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "user pegawai",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "ibnu",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "ibnu",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://6105548f-ac02-46aa-8a7a-298804065cd8.mock.pstmn.io/login",
+							"protocol": "https",
+							"host": [
+								"6105548f-ac02-46aa-8a7a-298804065cd8",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Default",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{url}}/login",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "username",
+											"value": "ibnu",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "ibnu",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://6105548f-ac02-46aa-8a7a-298804065cd8.mock.pstmn.io/login",
+									"protocol": "https",
+									"host": [
+										"6105548f-ac02-46aa-8a7a-298804065cd8",
+										"mock",
+										"pstmn",
+										"io"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Mon, 08 Mar 2021 13:51:09 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "0"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "x-srv-trace",
+									"value": "v=1;t=05093bb74131589c"
+								},
+								{
+									"key": "x-srv-span",
+									"value": "v=1;s=333e1ee0652cc056"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "120"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "119"
+								},
+								{
+									"key": "X-RateLimit-Reset",
+									"value": "1615211528"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true\n    \"message\": \"sukses\"\n    \"data\" : {\n        \"username\":\"muhammad ibnu subhan\",\n        \"api_token\":\"token\"\n    }\n\n}"
+						}
+					]
+				},
+				{
+					"name": "history",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://6105548f-ac02-46aa-8a7a-298804065cd8.mock.pstmn.io/history",
+							"protocol": "https",
+							"host": [
+								"6105548f-ac02-46aa-8a7a-298804065cd8",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"path": [
+								"history"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Default",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{url}}/history",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"history"
+									]
+								}
+							},
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "history",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://6105548f-ac02-46aa-8a7a-298804065cd8.mock.pstmn.io/history",
+									"protocol": "https",
+									"host": [
+										"6105548f-ac02-46aa-8a7a-298804065cd8",
+										"mock",
+										"pstmn",
+										"io"
+									],
+									"path": [
+										"history"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Mon, 08 Mar 2021 14:22:39 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "0"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "x-srv-trace",
+									"value": "v=1;t=75139870e5791bd3"
+								},
+								{
+									"key": "x-srv-span",
+									"value": "v=1;s=51f1099c38b6c378"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "120"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "119"
+								},
+								{
+									"key": "X-RateLimit-Reset",
+									"value": "1615213419"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\" : true,\n    \"message\" : \"sukses\",\n    \"data\" : [\n        {\n            \"id_barang\" : 1,\n            \"ruangan\" : \"pde\",\n            \"nama_barang\" : \"printer\",\n            \"img_barang\" : \"link\",\n            \"desc_kerusakan\" : \"tinta hitam ga keluar\"\n            \"status\" : \"sudah diperbaiki\"\n        },\n        {\n            \"id_barang\" : 2,\n            \"ruangan\" : \"pde\",\n            \"nama_barang\" : \"ac\",\n            \"img_barang\" : \"link\",\n            \"desc_kerusakan\" : \"AC tidak berfungsi\"\n            \"status\" : \"proses\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "lapor",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "ruangan",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "barang",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "desc_kerusakan",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "img_barang",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://6105548f-ac02-46aa-8a7a-298804065cd8.mock.pstmn.io/lapor",
+							"protocol": "https",
+							"host": [
+								"6105548f-ac02-46aa-8a7a-298804065cd8",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"path": [
+								"lapor"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Default",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{url}}/lapor",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"lapor"
+									]
+								}
+							},
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "lapor",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "ruangan",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "barang",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "desc_kerusankan",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "img_barang",
+											"type": "file",
+											"src": []
+										}
+									]
+								},
+								"url": {
+									"raw": "https://6105548f-ac02-46aa-8a7a-298804065cd8.mock.pstmn.io/lapor",
+									"protocol": "https",
+									"host": [
+										"6105548f-ac02-46aa-8a7a-298804065cd8",
+										"mock",
+										"pstmn",
+										"io"
+									],
+									"path": [
+										"lapor"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": "{\n    \"status\" : true,\n    \"message\" : \"sukses\"\n}"
+						}
+					]
+				}
+			],
+			"description": "user pelapor kerusakan atau kendala"
+		},
+		{
+			"name": "user direktur",
+			"item": [
+				{
+					"name": "laporan",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://6105548f-ac02-46aa-8a7a-298804065cd8.mock.pstmn.io/data-lapor",
+							"protocol": "https",
+							"host": [
+								"6105548f-ac02-46aa-8a7a-298804065cd8",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"path": [
+								"data-lapor"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "laporan",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://6105548f-ac02-46aa-8a7a-298804065cd8.mock.pstmn.io/data-lapor",
+									"protocol": "https",
+									"host": [
+										"6105548f-ac02-46aa-8a7a-298804065cd8",
+										"mock",
+										"pstmn",
+										"io"
+									],
+									"path": [
+										"data-lapor"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": "{\n    \"status\" : true,\n    \"message\" : \"sukses\"\n    \"data\" ; [\n        {\n            \"id_laporan\" : 1,\n            \"pelapor\": {\n                \"nama\" : \"nama\",\n                \"ruangan\" : \"pde\"\n            },\n            \"ruangan\" : \"pde\",\n            \"barang\" : \"printer\",\n            \"desc\" : \"warna hitam tidak berfungsi\",\n            \"status\" : \"diperbaiki\"\n            \"img\" : \"link\"\n        },\n        {\n            \"id_laporan\" : 2,\n            \"pelapor\": {\n                \"nama\" : \"nama\",\n                \"ruangan\" : \"pde\"\n            },\n            \"ruangan\" : \"pde\",\n            \"barang\" : \"AC\",\n            \"desc\" : \"AC rusak\",\n            \"status\" : \"proses\"\n            \"img\" : \"link\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "penempatan tugas",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "wewenang",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://6105548f-ac02-46aa-8a7a-298804065cd8.mock.pstmn.io/penempatan",
+							"protocol": "https",
+							"host": [
+								"6105548f-ac02-46aa-8a7a-298804065cd8",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"path": [
+								"penempatan"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "penempatan tugas",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "wewenang",
+											"value": "",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://6105548f-ac02-46aa-8a7a-298804065cd8.mock.pstmn.io/penempatan",
+									"protocol": "https",
+									"host": [
+										"6105548f-ac02-46aa-8a7a-298804065cd8",
+										"mock",
+										"pstmn",
+										"io"
+									],
+									"path": [
+										"penempatan"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": "{\n    \"status\" : true,\n    \"message\" : \"sukses\"\n}"
+						}
+					]
+				},
+				{
+					"name": "progres",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://6105548f-ac02-46aa-8a7a-298804065cd8.mock.pstmn.io/progres",
+							"protocol": "https",
+							"host": [
+								"6105548f-ac02-46aa-8a7a-298804065cd8",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"path": [
+								"progres"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "user direktur: bertugas untuk menugaskan semua kepala instalasi"
+		}
+	]
+}

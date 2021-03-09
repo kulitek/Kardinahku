@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 import models
 import schemas.pegawai_schema  as schema
 import bcrypt
+import numpy as np
+import pandas as pd
 from datetime import datetime, timedelta
 
 
@@ -18,6 +20,34 @@ def get_pegawai_all(db: Session):
     return db.query(models.Pegawai).filter(
         models.Pegawai.deleted_at == None).all()
 
+
+def seed_pegawai(db: Session):
+    if db is None:
+        db = SessionLocal()
+    df = pd.read_csv('seed/DataPegawai.csv')
+    df = df.astype(object)
+    try:
+        for i in range(0, df.shape[0]):
+            pegawai = Pegawai(id=df.iloc[i]['IdPegawai'],
+                              nama_lengkap=df.iloc[i]['NamaLengkap'],
+                              nama_panggilan=df.iloc[i]['NamaPanggilan'],
+                              jenis_kelamin=df.iloc[i]['JenisKelamin'],
+                              tempat_lahir=df.iloc[i]['TempatLahir'],
+                              tanggal_lahir=df.iloc[i]['TglLahir']
+                             )
+            db.add(pegawai)
+            db.commit()
+            db.refresh(pegawai)
+    else:
+        db.rollback()
+    del df
+
+def reset_pegawai(db: Session):
+    try:
+        db.query(Instalasi).delete()
+        db.commit()
+    else:
+        db.rollback()
 
 # def create_pegawai(db: Session, user: schema.UserRegister):
 #     hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())

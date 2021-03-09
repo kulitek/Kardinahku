@@ -1,5 +1,5 @@
-from typing import List, Optional
-from pydantic import BaseModel
+from typing import List, Optional, Dict
+from pydantic import BaseModel, Field
 from datetime import datetime
 
 
@@ -14,7 +14,7 @@ class UserRegister(UserBase):
     role: Optional[str]
 
 class UserRegistered(UserBase):
-    message: str
+    api_token: str
 
 class UserLogin(UserBase):
     password: str
@@ -36,8 +36,9 @@ class User(UserBase):
         orm_mode = True
 
 class Token(BaseModel):
-    access_token: str
-    username: str
+    status: bool
+    message: str
+    data: UserRegistered
 
 class TokenData(BaseModel):
     username: str = None
