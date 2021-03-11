@@ -34,3 +34,17 @@ def reset_ruangan(db: Session):
         db.commit()
     except Exception:
         db.rollback()
+
+def get_ruangan(db: Session):
+    try:
+        ruangan = db.query(Ruangan).all()
+        return ruangan
+    except Exception:
+        db.rollback()
+
+def get_ruangan_by_id(db: Session, id: str):
+    try:
+        ruangan = db.query(Ruangan).filter(Ruangan.id == id).first()
+        return ruangan
+    except Exception:
+        db.rollback()

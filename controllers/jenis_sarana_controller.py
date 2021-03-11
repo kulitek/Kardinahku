@@ -5,27 +5,29 @@ sys.path.append(BASE_DIR)
 from sqlalchemy.orm import Session
 from models import *
 import bcrypt
+import pandas as pd
+import numpy as np
 from datetime import datetime, timedelta
 
 
-jenis_sarana = ['elektronik','sedang','gawat','sangat gawat', 'darurat','bencana']
-
-def seed_kategori_masalah(db: Session):
-    global jenis_sarana
+def seed_jenis_sarana(db: Session):
     if db is None:
         db = SessionLocal()
+    df = pd.read_csv('seed/JenisBarang.csv')
+    df = df.astype(object)
     try:
-        for katmas in jenis_sarana:
-            kategori_masalah = KategoriMasalah(kategori=katmas)
-            db.add(kategori_masalah)
+        for i in range(0, df.shape[0]):
+            jenis_sarana = JenisSarana(nama=df.iloc[i]['JenisBarang'])
+            db.add(jenis_sarana)
             db.commit()
-            db.refresh(kategori_masalah)
-    except:
+            db.refresh(jenis_sarana)
+    except Exception:
         db.rollback()
+    del df
 
-def reset_kategori_masalah(db: Session):
+def reset_jenis_sarana(db: Session):
     try:
-        db.query(KategoriMasalah).delete()
+        db.query(JenisSarana).delete()
         db.commit()
     except Exception:
         db.rollback()
