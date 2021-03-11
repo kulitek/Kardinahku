@@ -11,6 +11,7 @@ import models
 from datetime import datetime
 from controllers.user_controller import *
 from controllers.pegawai_controller import *
+from controllers.ruangan_controller import *
 import schemas.user_schema as user_schema, schemas.pegawai_schema as pegawai_schema
 from database import engine, SessionLocal
 
@@ -63,25 +64,18 @@ async def create_upload_file(file: UploadFile = File(...)):
 
 @app.get("/pegawai")
 def get_pegawai(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
-    return get_pegawai_all(db=db)
+    return {"status": True, "message": "sukses", "data": get_pegawai_all(db=db)}
+
+@app.get("/pegawai/{nama}")
+def get_pegawai(nama: str, db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
+    return {"status": True, "message": "sukses", "data": get_pegawai_by_nama(db=db, nama=nama)}
+
+@app.get("/ruangan")
+def get_pegawai(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
+    return {"status": True, "message": "sukses", "data": get_ruangan(db=db)}
 
 
-# @app.post("/login", response_model=user_schema.Token)
-# def login_user(user: user_schema.UserLogin, db: Session = Depends(get_db)):
-#     db_user = get_user_by_username(db=db, username=user.username)
-#     if db_user is None:
-#         raise HTTPException(status_code=400, detail="Username tidak ditemukan.")
-#     else:
-#         is_password_correct = check_username_password(db, user)
-#         if is_password_correct is False:
-#             raise HTTPException(status_code=400, detail="Password salah.")
-#         else:
-#             access_token = create_permanent_access_token(data={"sub": user.username}, db=db)
-#             return {"access_token": access_token,
-#                     "username": user.username}
-
-
-@app.post("/login/", response_model=user_schema.Token)
+@app.post("/login")
 def login_user(username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
     db_user = get_user_by_username(db=db, username=username)
     if db_user is None:
@@ -97,10 +91,13 @@ def login_user(username: str = Form(...), password: str = Form(...), db: Session
                     user_schema.UserRegistered(username=username,api_token=access_token)
             )}
 
-@app.post("/register", response_model=user_schema.User)
-def registering_user(user: user_schema.UserRegister, db: Session=Depends(get_db)):
+@app.post("/register")
+def registering_user(username: str = Form(...), password: str = Form(...),
+                     email: str = Form(...), id_pegawai: str = Form(...),
+                     db: Session=Depends(get_db)):
+    user = user_schema.UserRegister(username=username, password=password,email=email, id_pegawai=id_pegawai)
     db_user = get_user_by_username(db=db, username=user.username)
     if db_user:
         raise HTTPException(status_code=400, detail="Username sudah terpakai.")
     else:
-        return create_user(db=db, user=user)
+        return {"status": True, "message": "sukses", "data": create_user(db=db, user=user)}

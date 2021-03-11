@@ -3,29 +3,29 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 
 
-class UserBase(BaseModel):
+class MasalahBase(BaseModel):
     _repr_hide = ['created_at', 'updated_at', 'deleted_at']
-    username: Optional[str]
+    deskripsi: Optional[str]
 
-class UserRegister(UserBase):
+class MasalahRegister(MasalahBase):
     password: str
     email: str
-    id_pegawai: str
+    id_pegawai: int
     role: Optional[str]
 
-class UserRegistered(UserBase):
+class MasalahRegistered(MasalahBase):
     api_token: str
 
-class UserLogin(UserBase):
+class MasalahLogin(MasalahBase):
     password: str
 
-class UserUpdate(UserBase):
+class MasalahUpdate(MasalahBase):
     id: int
     email: Optional[str]
     role: Optional[str]
     is_active: Optional[bool]
 
-class User(UserBase):
+class Masalah(MasalahBase):
     id: Optional[int]
     email: Optional[str]
     role: Optional[str]
@@ -38,7 +38,7 @@ class User(UserBase):
 class Token(BaseModel):
     status: bool
     message: str
-    data: UserRegistered
+    data: MasalahRegistered
 
 class TokenData(BaseModel):
     username: str = None

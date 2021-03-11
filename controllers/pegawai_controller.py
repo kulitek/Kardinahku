@@ -16,6 +16,11 @@ def get_pegawai_by_id(db: Session, id: str):
         models.Pegawai.id == id,
         models.Pegawai.deleted_at == None,).first()
 
+def get_pegawai_by_nama(db: Session, nama: str):
+    return db.query(models.Pegawai).filter(
+        models.Pegawai.nama_lengkap.ilike("%{}%".format(nama)),
+        models.Pegawai.deleted_at == None,).all()
+
 def get_pegawai_all(db: Session):
     return db.query(models.Pegawai).filter(
         models.Pegawai.deleted_at == None).all()
@@ -38,7 +43,7 @@ def seed_pegawai(db: Session):
             db.add(pegawai)
             db.commit()
             db.refresh(pegawai)
-    else:
+    except Exception:
         db.rollback()
     del df
 
@@ -46,7 +51,7 @@ def reset_pegawai(db: Session):
     try:
         db.query(Instalasi).delete()
         db.commit()
-    else:
+    except Exception:
         db.rollback()
 
 # def create_pegawai(db: Session, user: schema.UserRegister):

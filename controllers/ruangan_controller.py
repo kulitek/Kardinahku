@@ -24,7 +24,7 @@ def seed_ruangan(db: Session):
             db.add(ruangan)
             db.commit()
             db.refresh(ruangan)
-    else:
+    except Exception:
         db.rollback()
     del df
 
@@ -32,5 +32,19 @@ def reset_ruangan(db: Session):
     try:
         db.query(Ruangan).delete()
         db.commit()
-    else:
+    except Exception:
+        db.rollback()
+
+def get_ruangan(db: Session):
+    try:
+        ruangan = db.query(Ruangan).all()
+        return ruangan
+    except Exception:
+        db.rollback()
+
+def get_ruangan_by_id(db: Session, id: str):
+    try:
+        ruangan = db.query(Ruangan).filter(Ruangan.id == id).first()
+        return ruangan
+    except Exception:
         db.rollback()

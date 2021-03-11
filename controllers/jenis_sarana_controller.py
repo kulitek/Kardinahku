@@ -10,26 +10,24 @@ import numpy as np
 from datetime import datetime, timedelta
 
 
-def seed_instalasi(db: Session):
+def seed_jenis_sarana(db: Session):
     if db is None:
         db = SessionLocal()
-    df = pd.read_csv('seed/Instalasi.csv')
+    df = pd.read_csv('seed/JenisBarang.csv')
     df = df.astype(object)
     try:
         for i in range(0, df.shape[0]):
-            instalasi = Instalasi(id=df.iloc[i]['KdInstalasi'],
-                              nama=df.iloc[i]['NamaInstalasi'],
-                             )
-            db.add(instalasi)
+            jenis_sarana = JenisSarana(nama=df.iloc[i]['JenisBarang'])
+            db.add(jenis_sarana)
             db.commit()
-            db.refresh(instalasi)
+            db.refresh(jenis_sarana)
     except Exception:
         db.rollback()
     del df
 
-def reset_instalasi(db: Session):
+def reset_jenis_sarana(db: Session):
     try:
-        db.query(Instalasi).delete()
+        db.query(JenisSarana).delete()
         db.commit()
     except Exception:
         db.rollback()
