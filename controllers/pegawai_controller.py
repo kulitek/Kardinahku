@@ -38,7 +38,7 @@ def seed_pegawai(db: Session):
             db.add(pegawai)
             db.commit()
             db.refresh(pegawai)
-    else:
+    except Exception:
         db.rollback()
     del df
 
@@ -46,7 +46,7 @@ def reset_pegawai(db: Session):
     try:
         db.query(Instalasi).delete()
         db.commit()
-    else:
+    except Exception:
         db.rollback()
 
 # def create_pegawai(db: Session, user: schema.UserRegister):

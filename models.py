@@ -90,7 +90,6 @@ class JenisSarana(Base):
 
     created_at = Column(DateTime, default=datetime.now)
     update_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
-    done_at = Column(DateTime, nullable=True)
     deleted_at = Column(DateTime, nullable=True)
 
     sarana = relationship("Sarana", back_populates="jenis")

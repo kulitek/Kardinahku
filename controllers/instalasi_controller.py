@@ -23,7 +23,7 @@ def seed_instalasi(db: Session):
             db.add(instalasi)
             db.commit()
             db.refresh(instalasi)
-    else:
+    except Exception:
         db.rollback()
     del df
 
@@ -31,5 +31,5 @@ def reset_instalasi(db: Session):
     try:
         db.query(Instalasi).delete()
         db.commit()
-    else:
+    except Exception:
         db.rollback()
