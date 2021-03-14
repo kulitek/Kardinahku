@@ -2,25 +2,23 @@ import os, sys
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
 
-from typing import List, Optional, List, Any
+from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
+from fastapi import Form
 
 
-class InstalasiBase(BaseModel):
+class SaranaBase(BaseModel):
     _repr_hide = ['created_at', 'updated_at', 'deleted_at']
     nama: str
 
-class Instalasi(InstalasiBase):
+class Sarana(InstalasiBase):
     id: int
 
-class InstalasiRaw(BaseModel):
-    data: List[Instalasi] = None
+class SaranaCreate(BaseModel):
+    nama: str = Form(...)
+    
 
-class InstalasiGetAll(BaseModel):
-    status: Optional[bool] = True
-    message: Optional[str] = "sukses"
-    data: List[Instalasi] = None
 
 # class InstalasiInfo(InstalasiBase):
 #     id: int

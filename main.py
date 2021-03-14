@@ -12,7 +12,10 @@ from datetime import datetime
 from controllers.user_controller import *
 from controllers.pegawai_controller import *
 from controllers.ruangan_controller import *
+from controllers.jenis_sarana_controller import *
+from controllers.instalasi_controller import *
 import schemas.user_schema as user_schema, schemas.pegawai_schema as pegawai_schema
+from schemas.instalasi_schema import InstalasiGetAll
 from database import engine, SessionLocal
 
 
@@ -73,6 +76,26 @@ def get_pegawai(nama: str, db: Session = Depends(get_db), current_user: user_sch
 @app.get("/ruangan")
 def get_pegawai(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
     return {"status": True, "message": "sukses", "data": get_ruangan(db=db)}
+
+@app.get("/instalasi")
+def get_pegawai(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
+    # response = InstalasiGetAll(status=True,data=(get_instalasi(db=db)))
+    # if response.data is None:
+    #     response.message = "gagal"
+    # return response
+    return {"status": True, "message": "sukses", "data": get_instalasi(db=db)}
+
+@app.get("/jenissarana")
+def get_pegawai(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
+    return {"status": True, "message": "sukses", "data": get_jenis_sarana_all(db=db)}
+
+@app.post("/sarana")
+def get_pegawai(nama: str = Form(...), id_ruangan: int = Form(...),
+                id_jenis: str = Form(...), img: UploadFile = File(...),
+                db: Session = Depends(get_db),
+                current_user: user_schema.User = Depends(get_current_user)):
+
+    return {"status": True, "message": "sukses"}
 
 
 @app.post("/login")
