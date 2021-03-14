@@ -104,6 +104,7 @@ class Sarana(Base):
     panjang = Column(String(30), nullable=True)
     lebar = Column(String(30), nullable=True)
     tinggi = Column(String(30), nullable=True)
+    foto = Column(String, nullable=True)
     id_ruangan = Column(Integer, ForeignKey("ruangan.id"), nullable=True)
     id_jenis = Column(Integer, ForeignKey("jenis_sarana.id"))
 

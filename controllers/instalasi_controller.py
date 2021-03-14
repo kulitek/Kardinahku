@@ -33,3 +33,11 @@ def reset_instalasi(db: Session):
         db.commit()
     except Exception:
         db.rollback()
+
+def get_instalasi(db: Session):
+    try:
+        instalasi = db.query(Instalasi).all()
+        return instalasi
+    except Exception as e:
+        return None
+        db.rollback()

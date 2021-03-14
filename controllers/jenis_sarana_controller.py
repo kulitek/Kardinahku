@@ -31,3 +31,11 @@ def reset_jenis_sarana(db: Session):
         db.commit()
     except Exception:
         db.rollback()
+
+def get_jenis_sarana_all(db: Session):
+    try:
+        js = db.query(JenisSarana).filter(JenisSarana.deleted_at == None).all()
+        return js
+    except Exception as e:
+        print(e)
+        db.rollback()
