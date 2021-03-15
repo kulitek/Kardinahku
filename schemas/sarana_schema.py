@@ -5,19 +5,23 @@ sys.path.append(BASE_DIR)
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
-from fastapi import Form
+from fastapi import Form, UploadFile
+
 
 
 class SaranaBase(BaseModel):
     _repr_hide = ['created_at', 'updated_at', 'deleted_at']
     nama: str
 
-class Sarana(InstalasiBase):
+class Sarana(SaranaBase):
     id: int
 
 class SaranaCreate(BaseModel):
-    nama: str = Form(...)
-    
+    nama: str
+    id_ruangan: int
+    id_jenis: int
+    foto: UploadFile
+
 
 
 # class InstalasiInfo(InstalasiBase):
