@@ -2,13 +2,17 @@ import os, sys
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
 
+
+import pathlib
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from models import *
+from fastapi import UploadFile
 import bcrypt
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
+from schemas.sarana_schema import SaranaCreate
 
 
 # def seed_jenis_sarana(db: Session):
@@ -25,6 +29,13 @@ from datetime import datetime, timedelta
 #     except Exception:
 #         db.rollback()
 #     del df
+
+def put_file():
+    global BASE_DIR
+    return pathlib.Path.cwd() / 'assets' / 'sarana'
+
+def create_sarana(db: Session, sarana: SaranaCreate):
+    return None
 
 def reset_sarana(db: Session):
     try:

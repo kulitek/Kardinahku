@@ -33,7 +33,7 @@ def seed_pegawai(db: Session):
     df = df.astype(object)
     try:
         for i in range(0, df.shape[0]):
-            pegawai = Pegawai(id=df.iloc[i]['IdPegawai'],
+            pegawai = models.Pegawai(id=df.iloc[i]['IdPegawai'],
                               nama_lengkap=df.iloc[i]['NamaLengkap'],
                               nama_panggilan=df.iloc[i]['NamaPanggilan'],
                               jenis_kelamin=df.iloc[i]['JenisKelamin'],
@@ -43,16 +43,21 @@ def seed_pegawai(db: Session):
             db.add(pegawai)
             db.commit()
             db.refresh(pegawai)
-    except Exception:
+            return True
+    except Exception as e:
+        print(e)
         db.rollback()
     del df
 
 def reset_pegawai(db: Session):
     try:
-        db.query(Instalasi).delete()
+        db.query(models.Pegawai).delete()
         db.commit()
-    except Exception:
+        return True
+    except Exception as e:
+        print(e)
         db.rollback()
+        return False
 
 # def create_pegawai(db: Session, user: schema.UserRegister):
 #     hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
