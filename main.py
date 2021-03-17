@@ -2,12 +2,12 @@ import uvicorn
 from fastapi.security import OAuth2PasswordBearer
 from jwt import PyJWTError
 from sqlalchemy.orm import Session
-from fastapi import Depends, FastAPI, HTTPException, logger, Request, File, UploadFile, Form
+from fastapi import Depends, FastAPI, HTTPException, logger, Request, File, UploadFile, Form, Response
 from starlette import status
-from typing import List, Any, Iterator
+from typing import List, Any, Iterator, Optional
 # from fastapi_pagination import Page, add_pagination, paginate
 
-import models
+import models, string, random
 import pathlib as pl
 from datetime import datetime
 from controllers.user_controller import *
@@ -53,15 +53,29 @@ async def get_current_user(request: Request, db: Session = Depends(get_db)) -> A
         raise credentials_exception
     return user
 
-@app.post("/file/")
-async def create_file(file: bytes = File(...)):
+# @app.post("/file/")
+# async def create_file(file: bytes = File(...)):
+#     # Thus use memory (RAM)
+#     return {"file_size": len(file)}
+@app.post("/file")
+async def create_file(path: str = Form(...)):
     # Thus use memory (RAM)
-    return {"file_size": len(file)}
+    img = pl.Path(path).resolve().read_bytes()
+    extension = path.split(r'.')[-1]
+    media_type = "image/png" if r'.png' in extension else "image/jpeg"
+    return Response(content=img, media_type=media_type)
 
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile = File(...)):
-    pats = pl.Path(r'assets/sarana/image.jpg').write_bytes(file.file.read())
-    return {"filename": pl.Path(r'assets/sarana/image.jpg').resolve()}
+    new_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 6))
+    file_type = ''.join([r'.',file.filename.split(r'.')[-1]])
+    new_name = new_name.replace(" ", r'-') + '__' + str(datetime.now().strftime(r'%Y%m%d%H%M%S')) + file_type
+    pats = pl.Path(r'assets/sarana/{}'.format(new_name)).write_bytes(file.file.read())
+    file.file.close()
+    img = pl.Path(r'assets/sarana/{}'.format(new_name)).read_bytes()
+    # return {"filename": pl.Path(r'assets/sarana/{}'.format(file.filename)).resolve(),
+    #         "file": ''}
+    return Response(content=img, media_type=file.content_type)
 
 
 
@@ -102,11 +116,20 @@ def app_get_jenissarana(db: Session = Depends(get_db), current_user: user_schema
 
 @app.post("/sarana")
 def app_post_sarana(nama: str = Form(...), id_ruangan: int = Form(...),
-                id_jenis: int = Form(...), foto: UploadFile = File(...),
+                id_jenis: int = Form(...), foto: Optional[UploadFile] = File(None),
                 # current_user: user_schema.User = Depends(get_current_user),
                 db: Session = Depends(get_db)):
     sarana = SaranaCreate(nama=nama,id_ruangan=id_ruangan,id_jenis=id_jenis,foto=foto)
-    return {"status": True, "message": "sukses", "data": put_file()}
+    return {"status": True, "message": "sukses", "data": create_sarana(db=db,sarana=sarana)}
+
+@app.put("/sarana")
+def app_post_sarana(id: int = Form(...), nama: Optional[str] = Form(None), id_ruangan: Optional[int] = Form(None),
+                id_jenis: Optional[int] = Form(None), foto: Optional[UploadFile] = File(None),
+                # current_user: user_schema.User = Depends(get_current_user),
+                db: Session = Depends(get_db)):
+    sarana = SaranaUpdate(nama=nama,id_ruangan=id_ruangan,id_jenis=id_jenis)
+    sarana.foto = foto if foto else None
+    return {"status": True, "message": "sukses", "data": create_sarana(db=db,sarana=sarana)}
 
 @app.get("/percobaan")
 def percobaan():
