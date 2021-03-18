@@ -29,6 +29,13 @@ SARANA_PATH = r'assets/sarana/'
 #         db.rollback()
 #     del df
 
+def get_sarana_all(db: Session):
+    try:
+        return db.query(Sarana).filter(Sarana.deleted_at == None).all()
+    except Exception as e:
+        print(e)
+        return None
+
 def create_file(foto: UploadFile):
     global SARANA_PATH
     new_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 6))
@@ -71,12 +78,15 @@ def reset_sarana(db: Session):
 
 def search_sarana(db: Session, key: str):
     try:
-        db.query(Sarana).filter(or_(
-            Sarana.nama.like(key),
-            Sarana.berat.like(key),
-            Sarana.panjang.like(key),
-            Sarana.tinggi.like(key),
+        sarana = db.query(Sarana).filter(or_(
+            Sarana.nama.ilike(r'%{}%'.format(key)),
+            # Sarana.berat.ilike(r'%{}%'.format(key)),
+            # Sarana.panjang.ilike(r'%{}%'.format(key)),
+            # Sarana.tinggi.ilike(r'%{}%'.format(key)),
+            # Sarana.ruangan.nama.ilike(r'%{}%'.format(key))
         )).all()
+        return sarana
     except Exception as e:
         print(e)
         db.rollback()
+        return e
