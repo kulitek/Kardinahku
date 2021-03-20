@@ -22,7 +22,7 @@ class SaranaCreate(BaseModel):
     id_jenis: int
     foto: UploadFile
 
-class SaranaCreate(BaseModel):
+class SaranaUpdate(BaseModel):
     id: int
     nama: Optional[str] = None
     id_ruangan: Optional[int] = None

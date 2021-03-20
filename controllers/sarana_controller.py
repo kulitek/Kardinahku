@@ -78,14 +78,16 @@ def reset_sarana(db: Session):
 
 def search_sarana(db: Session, key: str):
     try:
-        sarana = db.query(Sarana).filter(or_(
+        sarana = db.query(Sarana).join(Sarana.ruangan).join(Sarana.jenis).filter(or_(
             Sarana.nama.ilike(r'%{}%'.format(key)),
+            Sarana.jenis.property.mapper.class_.nama.ilike(r'%{}%'.format(key)),
             # Sarana.berat.ilike(r'%{}%'.format(key)),
             # Sarana.panjang.ilike(r'%{}%'.format(key)),
             # Sarana.tinggi.ilike(r'%{}%'.format(key)),
-            # Sarana.ruangan.nama.ilike(r'%{}%'.format(key))
-        )).all()
-        return sarana
+            Sarana.ruangan.property.mapper.class_.nama.ilike(r'%{}%'.format(key))
+        ))
+        # sarana = db.query(Sarana).join()
+        return sarana.all()
     except Exception as e:
         print(e)
         db.rollback()
