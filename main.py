@@ -1,13 +1,13 @@
-import uvicorn
+import uvicorn, urllib3
 from fastapi.security import OAuth2PasswordBearer
 from jwt import PyJWTError
 from sqlalchemy.orm import Session
-from fastapi import Depends, FastAPI, HTTPException, logger, Request, File, UploadFile, Form
+from fastapi import Depends, FastAPI, HTTPException, logger, Request, File, UploadFile, Form, Response
 from starlette import status
-from typing import List, Any, Iterator
+from typing import List, Any, Iterator, Optional
 # from fastapi_pagination import Page, add_pagination, paginate
 
-import models
+import models, string, random
 import pathlib as pl
 from datetime import datetime
 from controllers.user_controller import *
@@ -53,15 +53,29 @@ async def get_current_user(request: Request, db: Session = Depends(get_db)) -> A
         raise credentials_exception
     return user
 
-@app.post("/file/")
-async def create_file(file: bytes = File(...)):
+# @app.post("/file/")
+# async def create_file(file: bytes = File(...)):
+#     # Thus use memory (RAM)
+#     return {"file_size": len(file)}
+@app.get("/file/{path}")
+async def create_file(path: str):
     # Thus use memory (RAM)
-    return {"file_size": len(file)}
+    img = pl.Path(path).resolve().read_bytes()
+    extension = path.split(r'.')[-1]
+    media_type = "image/png" if r'.png' in extension else "image/jpeg"
+    return Response(content=img, media_type=media_type)
 
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile = File(...)):
-    pats = pl.Path(r'assets/sarana/image.jpg').write_bytes(file.file.read())
-    return {"filename": pl.Path(r'assets/sarana/image.jpg').resolve()}
+    new_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 6))
+    file_type = ''.join([r'.',file.filename.split(r'.')[-1]])
+    new_name = new_name.replace(" ", r'-') + '__' + str(datetime.now().strftime(r'%Y%m%d%H%M%S')) + file_type
+    pats = pl.Path(r'assets/sarana/{}'.format(new_name)).write_bytes(file.file.read())
+    file.file.close()
+    img = pl.Path(r'assets/sarana/{}'.format(new_name)).read_bytes()
+    # return {"filename": pl.Path(r'assets/sarana/{}'.format(file.filename)).resolve(),
+    #         "file": ''}
+    return Response(content=img, media_type=file.content_type)
 
 
 
@@ -70,8 +84,16 @@ async def create_upload_file(file: UploadFile = File(...)):
 #     return paginate(get_pegawai_all(db=db))
 
 @app.get("/pegawai")
-def app_get_pegawai(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
+def app_get_pegawai(db: Session = Depends(get_db),
+                    current_user: user_schema.User = Depends(get_current_user)
+                    ):
     return {"status": True, "message": "sukses", "data": get_pegawai_all(db=db)}
+
+@app.get("/pegawai/{id}")
+def app_get_pegawai(id: str, db: Session = Depends(get_db),
+                    # current_user: user_schema.User = Depends(get_current_user)
+                    ):
+    return {"status": True, "message": "sukses", "data": get_pegawai_by_id(db=db,id=id)}
 
 @app.get("/pegawai/seed")
 def app_seed_pegawai(db: Session = Depends(get_db)):
@@ -101,12 +123,34 @@ def app_get_jenissarana(db: Session = Depends(get_db), current_user: user_schema
     return {"status": True, "message": "sukses", "data": get_jenis_sarana_all(db=db)}
 
 @app.post("/sarana")
-def app_post_sarana(nama: str = Form(...), id_ruangan: int = Form(...),
-                id_jenis: int = Form(...), foto: UploadFile = File(...),
+def app_create_sarana(nama: str = Form(...), id_ruangan: int = Form(...),
+                id_jenis: int = Form(...), foto: Optional[UploadFile] = File(None),
                 # current_user: user_schema.User = Depends(get_current_user),
                 db: Session = Depends(get_db)):
     sarana = SaranaCreate(nama=nama,id_ruangan=id_ruangan,id_jenis=id_jenis,foto=foto)
-    return {"status": True, "message": "sukses", "data": put_file()}
+    return {"status": True, "message": "sukses", "data": create_sarana(db=db,sarana=sarana)}
+
+@app.put("/sarana")
+def app_update_sarana(id: int = Form(...), nama: Optional[str] = Form(None), id_ruangan: Optional[int] = Form(None),
+                berat: Optional[str] = Form(None), panjang: Optional[str] = Form(None), tinggi: Optional[str] = Form(None), lebar: Optional[str] = Form(None),
+                id_jenis: Optional[int] = Form(None), foto: Optional[UploadFile] = File(None),
+                # current_user: user_schema.User = Depends(get_current_user),
+                db: Session = Depends(get_db)):
+    sarana = SaranaUpdate(nama=nama,id_ruangan=id_ruangan,id_jenis=id_jenis)
+    sarana.foto = foto if foto else None
+    return {"status": True, "message": "sukses", "data": create_sarana(db=db,sarana=sarana)}
+
+@app.get("/sarana")
+async def app_get_sarana_all(db: Session = Depends(get_db),
+                             # current_user: user_schema.User = Depends(get_current_user)
+                            ):
+    return {"status": True, "message": "sukses", "data": get_sarana_all(db=db)}
+
+@app.get("/sarana/{key}")
+async def app_get_sarana_id(key: str, db: Session = Depends(get_db),
+                            # current_user: user_schema.User = Depends(get_current_user)
+                            ):
+    return {"status": True, "message": "sukses", "data": search_sarana(db=db,key=key)}
 
 @app.get("/percobaan")
 def percobaan():
