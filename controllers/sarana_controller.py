@@ -11,7 +11,7 @@ import bcrypt, string, random
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
-from schemas.sarana_schema import SaranaCreate
+from schemas.sarana_schema import SaranaCreate, SaranaUpdate
 
 SARANA_PATH = r'assets/sarana/'
 # def seed_jenis_sarana(db: Session):
@@ -46,13 +46,8 @@ def create_file(foto: UploadFile):
     return r'{}{}'.format(SARANA_PATH, new_name)
 
 def put_file(foto: UploadFile, old_name):
-    global SARANA_PATH
-    # new_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 6))
-    file_type = ''.join([r'.',foto.filename.split(r'.')[-1]])
-    new_name = new_name.replace(" ", r'-') + '__' + str(datetime.now().strftime(r'%Y%m%d%H%M%S')) + file_type
-    pl.Path(r'{}{}'.format(SARANA_PATH, new_name)).write_bytes(foto.file.read())
-    foto.file.close()
-    return r'{}{}'.format(SARANA_PATH, new_name)
+    pl.Path(r'{}'.format(old_name)).unlink()
+    return create_file(foto)
 
 def create_sarana(db: Session, sarana: SaranaCreate):
     db_sarana = Sarana(nama=sarana.nama,id_ruangan=sarana.id_ruangan,id_jenis=sarana.id_jenis)
@@ -66,6 +61,39 @@ def create_sarana(db: Session, sarana: SaranaCreate):
         print(e)
         db.rollback()
         return e
+
+def update_sarana(db: Session, sarana: SaranaUpdate):
+    db_sarana = db.query(Sarana).filter(Sarana.id == sarana.id, Sarana.deleted_at == None).first()
+    db_sarana.nama = sarana.nama if sarana.nama else db_sarana.nama
+    db_sarana.id_ruangan = sarana.id_ruangan if sarana.id_ruangan else db_sarana.id_ruangan
+    db_sarana.id_jenis = sarana.id_jenis if sarana.id_jenis else db_sarana.id_jenis
+    db_sarana.berat = sarana.berat if sarana.berat else db_sarana.berat
+    db_sarana.panjang = sarana.panjang if sarana.panjang else db_sarana.panjang
+    db_sarana.lebar = sarana.lebar if sarana.lebar else db_sarana.lebar
+    db_sarana.tinggi = sarana.tinggi if sarana.tinggi else db_sarana.tinggi
+    db_sarana.foto = put_file(sarana.foto, db_sarana.foto) if sarana.foto else db_sarana.foto
+    try:
+        db.commit()
+        db.refresh(db_sarana)
+        return db_sarana
+    except Exception as e:
+        print(e)
+        db.rollback()
+        return e
+
+async def delete_sarana(db: Session, id: int):
+    try:
+        db_sarana = db.query(Sarana).filter(Sarana.id == id, Sarana.deleted_at == None).first()
+        db_sarana.deleted_at = datetime.now()
+        db.commit()
+        db.refresh(db_sarana)
+        return db_sarana
+    except Exception as e:
+        print(e)
+        db.rollback()
+        return None
+    else:
+        del db_sarana
 
 def reset_sarana(db: Session):
     try:
@@ -81,11 +109,8 @@ def search_sarana(db: Session, key: str):
         sarana = db.query(Sarana).join(Sarana.ruangan).join(Sarana.jenis).filter(or_(
             Sarana.nama.ilike(r'%{}%'.format(key)),
             Sarana.jenis.property.mapper.class_.nama.ilike(r'%{}%'.format(key)),
-            # Sarana.berat.ilike(r'%{}%'.format(key)),
-            # Sarana.panjang.ilike(r'%{}%'.format(key)),
-            # Sarana.tinggi.ilike(r'%{}%'.format(key)),
-            Sarana.ruangan.property.mapper.class_.nama.ilike(r'%{}%'.format(key))
-        ))
+            Sarana.ruangan.property.mapper.class_.nama.ilike(r'%{}%'.format(key),)
+        ), Sarana.deleted_at == None)
         # sarana = db.query(Sarana).join()
         return sarana.all()
     except Exception as e:
