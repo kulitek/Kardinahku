@@ -14,7 +14,7 @@ def seed_instalasi(db: Session):
     if db is None:
         db = SessionLocal()
     df = pd.read_csv('seed/Instalasi.csv')
-    df = df.astype(object)
+    df = df.astype(object).where(pd.notnull(df), None)
     try:
         for i in range(0, df.shape[0]):
             instalasi = Instalasi(id=df.iloc[i]['KdInstalasi'],
@@ -23,21 +23,28 @@ def seed_instalasi(db: Session):
             db.add(instalasi)
             db.commit()
             db.refresh(instalasi)
-    except Exception:
+        return True
+    except Exception as e:
+        print(e)
         db.rollback()
-    del df
+        return False
+    finally:
+        del df
 
 def reset_instalasi(db: Session):
     try:
         db.query(Instalasi).delete()
         db.commit()
-    except Exception:
+        return "All Instalasi have been deleted."
+    except Exception as e:
+        print(e)
         db.rollback()
+        return "There's an error in reset_intalasi"
 
 def get_instalasi(db: Session):
     try:
-        instalasi = db.query(Instalasi).all()
-        return instalasi
+        return db.query(Instalasi).filter(Instalasi.deleted_at == None).all()
     except Exception as e:
-        return None
+        print(e)
         db.rollback()
+        return None

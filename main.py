@@ -36,11 +36,7 @@ def get_db():
         db.close()
 
 async def get_current_user(request: Request, db: Session = Depends(get_db)) -> Any:
-    credentials_exception = HTTPException(
-        status_code = status.HTTP_401_UNAUTHORIZED,
-        detail = "Could not validate credentials",
-        headers = {"WWW-Authenticate": "Authorization"}
-    )
+    credentials_exception = HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Could not validate credentials", headers = {"WWW-Authenticate": "Authorization"})
     token = None
     try:
         token = request.headers["Authorization"]
@@ -85,8 +81,11 @@ async def create_upload_file(file: UploadFile = File(...)):
     return Response(content=img, media_type=file.content_type)
 
 @app.delete("/users")
-def api_reset_users(db: Session = Depends(get_db)):
-    return {"status": True, "message": "Sukses", "data": reset_users(db=db)}
+def api_reset_users(db: Session = Depends(get_db), code: str = Form(...)):
+    if code == 'utuhmbak':
+        return {"status": True, "message": "Sukses", "data": reset_users(db=db)}
+    else:
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Code not valid.")
 
 
 @app.get("/pegawai")
@@ -103,39 +102,75 @@ def app_seed_pegawai(db: Session = Depends(get_db), code: str = Form(...)):
     if code == 'utuhmbak':
         return {"status": True, "message": "sukses", "data": seed_pegawai(db=db)}
     else:
-        raise HTTPException(
-        status_code = status.HTTP_401_UNAUTHORIZED,
-        detail = "Code not valid.",
-        headers = {"WWW-Authenticate": "Authorization"})
-
-@app.delete("/pegawai/reset")
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Code not valid.")
+@app.delete("/pegawai/reset/")
 def app_reset_pegawai(db: Session = Depends(get_db), code: str = Form(...)):
     if code == 'utuhmbak':
         return {"status": True, "message": "sukses", "data": reset_pegawai(db=db)}
     else:
-        raise HTTPException(
-        status_code = status.HTTP_401_UNAUTHORIZED,
-        detail = "Code not valid.",
-        headers = {"WWW-Authenticate": "Authorization"})
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Code not valid.")
 
 @app.get("/ruangan")
 def app_get_ruangan(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
     return {"status": True, "message": "sukses", "data": get_ruangan(db=db)}
+@app.post("/ruangan/seed")
+def app_seed_ruangan(db: Session = Depends(get_db), code: str = Form(...)):
+    if code == 'utuhmbak':
+        return {"status": True, "message": "sukses", "data": seed_ruangan(db=db)}
+    else:
+        raise HTTPException(status_code = status.HTTP_423_LOCKED, detail = "Code not valid.")
+@app.delete("/ruangan/reset/")
+def app_reset_ruangan(db: Session = Depends(get_db), code: str = Form(...)):
+    if code == 'utuhmbak':
+        return {"status": True, "message": "sukses", "data": reset_ruangan(db=db)}
+    else:
+        raise HTTPException(status_code = status.HTTP_423_LOCKED, detail = "Code not valid.")
+
+
 
 @app.get("/instalasi")
 def app_get_instalasi(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
     return {"status": True, "message": "sukses", "data": get_instalasi(db=db)}
+@app.post("/instalasi/seed")
+def app_seed_instalasi(db: Session = Depends(get_db), code: str = Form(...)):
+    if code == 'utuhmbak':
+        return {"status": True, "message": "sukses", "data": seed_instalasi(db=db)}
+    else:
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Code not valid.")
+@app.delete("/instalasi/reset/")
+def app_reset_instalasi(db: Session = Depends(get_db), code: str = Form(...)):
+    if code == 'utuhmbak':
+        return {"status": True, "message": "sukses", "data": reset_instalasi(db=db)}
+    else:
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Code not valid.")
+
 
 @app.get("/jenissarana")
-def app_get_jenissarana(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
+def app_get_jenis_sarana(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
     return {"status": True, "message": "sukses", "data": get_jenis_sarana_all(db=db)}
+@app.post("/jenissarana/seed/")
+def app_seed_jenis_sarana(db: Session = Depends(get_db), code: str = Form(...)):
+    if code == 'utuhmbak':
+        return {"status": True, "message": "sukses", "data": seed_jenis_sarana(db=db)}
+    else:
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Code not valid.")
+@app.delete("/jenissarana/reset/")
+def app_reset_jenis_sarana(db: Session = Depends(get_db), code: str = Form(...)):
+    if code == 'utuhmbak':
+        return {"status": True, "message": "sukses", "data": reset_jenis_sarana(db=db)}
+    else:
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Code not valid.")
+
 
 @app.post("/sarana")
 def app_create_sarana(nama: str = Form(...), id_ruangan: int = Form(...),
                 id_jenis: int = Form(...), foto: Optional[UploadFile] = File(None),
                 current_user: user_schema.User = Depends(get_current_user),
                 db: Session = Depends(get_db)):
-    sarana = SaranaCreate(nama=nama,id_ruangan=id_ruangan,id_jenis=id_jenis,foto=foto)
+    try:
+        sarana = SaranaCreate(nama=nama,id_ruangan=id_ruangan,id_jenis=id_jenis,foto=foto)
+    except Exception as e:
+        raise HTTPException(detail="Error = " + str(e))
     return {"status": True, "message": "sukses", "data": create_sarana(db=db,sarana=sarana)}
 @app.put("/sarana")
 def app_update_sarana(id: int = Form(...), nama: Optional[str] = Form(None), id_ruangan: Optional[int] = Form(None),
@@ -154,10 +189,20 @@ async def delete_sarana_id(id: str, db: Session = Depends(get_db)):
 async def app_get_sarana_all(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
     return {"status": True, "message": "sukses", "data": get_sarana_all(db=db)}
 @app.get("/sarana/{key}")
-async def app_search_sarana(key: str, db: Session = Depends(get_db),
-                            # current_user: user_schema.User = Depends(get_current_user)
-                            ):
+async def app_search_sarana(key: str, db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
     return {"status": True, "message": "sukses", "data": search_sarana(db=db,key=key)}
+# @app.post("/sarana/seed")
+# def app_seed_sarana(db: Session = Depends(get_db), code: str = Form(...)):
+#     if code == 'utuhmbak':
+#         return {"status": True, "message": "sukses", "data": seed_sarana(db=db)}
+#     else:
+#         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Code not valid.")
+@app.delete("/sarana/reset/")
+def app_reset_sarana(db: Session = Depends(get_db), code: str = Form(...)):
+    if code == 'utuhmbak':
+        return {"status": True, "message": "sukses", "data": reset_sarana(db=db)}
+    else:
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Code not valid.")
 
 # @app.get("/percobaan")
 # def percobaan():

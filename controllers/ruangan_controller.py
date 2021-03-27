@@ -14,7 +14,7 @@ def seed_ruangan(db: Session):
     if db is None:
         db = SessionLocal()
     df = pd.read_csv('seed/Ruangan.csv')
-    df = df.astype(object)
+    df = df.astype(object).where(pd.notnull(df), None)
     try:
         for i in range(0, df.shape[0]):
             ruangan = Ruangan(id=df.iloc[i]['KdRuangan'],
@@ -24,27 +24,39 @@ def seed_ruangan(db: Session):
             db.add(ruangan)
             db.commit()
             db.refresh(ruangan)
-    except Exception:
+        return True
+    except Exception as e:
+        print(e)
         db.rollback()
-    del df
+        return False
+    finally:
+        del df
 
 def reset_ruangan(db: Session):
     try:
         db.query(Ruangan).delete()
         db.commit()
-    except Exception:
+        return True
+    except Exception as e:
+        print(e)
         db.rollback()
+        return False
+
 
 def get_ruangan(db: Session):
     try:
         ruangan = db.query(Ruangan).all()
         return ruangan
-    except Exception:
+    except Exception as e:
+        print(e)
         db.rollback()
+        return None
 
 def get_ruangan_by_id(db: Session, id: str):
     try:
         ruangan = db.query(Ruangan).filter(Ruangan.id == id).first()
         return ruangan
-    except Exception:
+    except Exception as e:
+        print(e)
         db.rollback()
+        return False

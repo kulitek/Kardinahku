@@ -99,8 +99,11 @@ def reset_sarana(db: Session):
     try:
         db.query(Sarana).delete()
         db.commit()
-    except Exception:
+        return "All Sarana have been deleted."
+    except Exception as e:
+        print(e)
         db.rollback()
+        return "There's an error on function reset_sarana"
 
 
 
