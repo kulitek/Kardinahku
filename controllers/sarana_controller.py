@@ -11,7 +11,11 @@ import bcrypt, string, random
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
+<<<<<<< HEAD
 from schemas.sarana_schema import SaranaCreate, SaranaUpdate
+=======
+from schemas.sarana_schema import SaranaCreate
+>>>>>>> df2873fc33bcf0c92e7971b8e35581f9332fcb19
 
 SARANA_PATH = r'assets/sarana/'
 # def seed_jenis_sarana(db: Session):
@@ -46,8 +50,18 @@ def create_file(foto: UploadFile):
     return r'{}{}'.format(SARANA_PATH, new_name)
 
 def put_file(foto: UploadFile, old_name):
+<<<<<<< HEAD
     pl.Path(r'{}'.format(old_name)).unlink()
     return create_file(foto)
+=======
+    global SARANA_PATH
+    # new_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 6))
+    file_type = ''.join([r'.',foto.filename.split(r'.')[-1]])
+    new_name = new_name.replace(" ", r'-') + '__' + str(datetime.now().strftime(r'%Y%m%d%H%M%S')) + file_type
+    pl.Path(r'{}{}'.format(SARANA_PATH, new_name)).write_bytes(foto.file.read())
+    foto.file.close()
+    return r'{}{}'.format(SARANA_PATH, new_name)
+>>>>>>> df2873fc33bcf0c92e7971b8e35581f9332fcb19
 
 def create_sarana(db: Session, sarana: SaranaCreate):
     db_sarana = Sarana(nama=sarana.nama,id_ruangan=sarana.id_ruangan,id_jenis=sarana.id_jenis)
@@ -62,6 +76,7 @@ def create_sarana(db: Session, sarana: SaranaCreate):
         db.rollback()
         return e
 
+<<<<<<< HEAD
 def update_sarana(db: Session, sarana: SaranaUpdate):
     db_sarana = db.query(Sarana).filter(Sarana.id == sarana.id, Sarana.deleted_at == None).first()
     db_sarana.nama = sarana.nama if sarana.nama else db_sarana.nama
@@ -95,6 +110,8 @@ async def delete_sarana(db: Session, id: int):
     else:
         del db_sarana
 
+=======
+>>>>>>> df2873fc33bcf0c92e7971b8e35581f9332fcb19
 def reset_sarana(db: Session):
     try:
         db.query(Sarana).delete()
@@ -109,8 +126,16 @@ def search_sarana(db: Session, key: str):
         sarana = db.query(Sarana).join(Sarana.ruangan).join(Sarana.jenis).filter(or_(
             Sarana.nama.ilike(r'%{}%'.format(key)),
             Sarana.jenis.property.mapper.class_.nama.ilike(r'%{}%'.format(key)),
+<<<<<<< HEAD
             Sarana.ruangan.property.mapper.class_.nama.ilike(r'%{}%'.format(key),)
         ), Sarana.deleted_at == None)
+=======
+            # Sarana.berat.ilike(r'%{}%'.format(key)),
+            # Sarana.panjang.ilike(r'%{}%'.format(key)),
+            # Sarana.tinggi.ilike(r'%{}%'.format(key)),
+            Sarana.ruangan.property.mapper.class_.nama.ilike(r'%{}%'.format(key))
+        ))
+>>>>>>> df2873fc33bcf0c92e7971b8e35581f9332fcb19
         # sarana = db.query(Sarana).join()
         return sarana.all()
     except Exception as e:

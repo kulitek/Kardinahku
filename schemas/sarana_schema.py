@@ -8,6 +8,7 @@ from datetime import datetime
 from fastapi import Form, UploadFile
 
 
+<<<<<<< HEAD
 # def form_body_required(cls):
 #     cls.__signature__ = cls.__signature__.replace(
 #         parameters=[
@@ -26,6 +27,8 @@ from fastapi import Form, UploadFile
 #     )
 #     return cls
 
+=======
+>>>>>>> df2873fc33bcf0c92e7971b8e35581f9332fcb19
 
 class SaranaBase(BaseModel):
     _repr_hide = ['created_at', 'updated_at', 'deleted_at']
@@ -46,6 +49,7 @@ class SaranaUpdate(BaseModel):
     id_ruangan: Optional[int] = None
     id_jenis: Optional[int] = None
     foto: Optional[UploadFile] = None
+<<<<<<< HEAD
     berat: Optional[str] = None
     panjang: Optional[str] = None
     tinggi: Optional[str] = None
@@ -62,6 +66,8 @@ class SaranaUpdate(BaseModel):
 #     panjang: Optional[str] = None
 #     tinggi: Optional[str] = None
 #     lebar: Optional[str] = None
+=======
+>>>>>>> df2873fc33bcf0c92e7971b8e35581f9332fcb19
 
 
 
