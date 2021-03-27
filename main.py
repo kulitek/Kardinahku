@@ -84,6 +84,10 @@ async def create_upload_file(file: UploadFile = File(...)):
     #         "file": ''}
     return Response(content=img, media_type=file.content_type)
 
+@app.delete("/users")
+def api_reset_users(db: Session = Depends(get_db)):
+    return {"status": True, "message": "Sukses", "data": reset_users(db=db)}
+
 
 @app.get("/pegawai")
 def app_get_pegawai(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
@@ -94,12 +98,25 @@ def app_get_pegawai(id: str, db: Session = Depends(get_db),current_user: user_sc
 @app.post("/pegawai")
 def get_pegawai(nama: str = Form(...), db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
     return {"status": True, "message": "sukses", "data": get_pegawai_by_nama(db=db, nama=nama)}
-@app.get("/pegawai/seed")
-def app_seed_pegawai(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
-    return {"status": True, "message": "sukses", "data": seed_pegawai(db=db)}
-@app.get("/pegawai/reset")
-def app_reset_pegawai(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
-    return {"status": True, "message": "sukses", "data": reset_pegawai(db=db)}
+@app.post("/pegawai/seed")
+def app_seed_pegawai(db: Session = Depends(get_db), code: str = Form(...)):
+    if code == 'utuhmbak':
+        return {"status": True, "message": "sukses", "data": seed_pegawai(db=db)}
+    else:
+        raise HTTPException(
+        status_code = status.HTTP_401_UNAUTHORIZED,
+        detail = "Code not valid.",
+        headers = {"WWW-Authenticate": "Authorization"})
+
+@app.delete("/pegawai/reset")
+def app_reset_pegawai(db: Session = Depends(get_db), code: str = Form(...)):
+    if code == 'utuhmbak':
+        return {"status": True, "message": "sukses", "data": reset_pegawai(db=db)}
+    else:
+        raise HTTPException(
+        status_code = status.HTTP_401_UNAUTHORIZED,
+        detail = "Code not valid.",
+        headers = {"WWW-Authenticate": "Authorization"})
 
 @app.get("/ruangan")
 def app_get_ruangan(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):

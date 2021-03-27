@@ -30,7 +30,7 @@ def seed_pegawai(db: Session):
     if db is None:
         db = SessionLocal()
     df = pd.read_csv('seed/DataPegawai.csv')
-    df = df.astype(object)
+    df = df.astype(object).where(pd.notnull(df), None)
     try:
         for i in range(0, df.shape[0]):
             pegawai = models.Pegawai(id=df.iloc[i]['IdPegawai'],
@@ -38,16 +38,19 @@ def seed_pegawai(db: Session):
                               nama_panggilan=df.iloc[i]['NamaPanggilan'],
                               jenis_kelamin=df.iloc[i]['JenisKelamin'],
                               tempat_lahir=df.iloc[i]['TempatLahir'],
-                              tanggal_lahir=df.iloc[i]['TglLahir']
+                              tanggal_lahir=datetime.strptime(df.iloc[i]['TglLahir'], "%d/%m/%Y %H:%M:%S") if df.iloc[i]['TglLahir'] != None or df.iloc[i]['TglLahir'] == 'NaN' else None
                              )
             db.add(pegawai)
             db.commit()
             db.refresh(pegawai)
-            return True
+        return True
     except Exception as e:
         print(e)
         db.rollback()
-    del df
+        return False
+    finally:
+        del df
+
 
 def reset_pegawai(db: Session):
     try:

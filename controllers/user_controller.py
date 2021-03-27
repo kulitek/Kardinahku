@@ -40,7 +40,16 @@ def check_username_password(db: Session, user: schema.UserLogin):
     return bcrypt.checkpw(user.password.encode('utf-8'), db_user_info.password.encode('utf-8'))
 
 
-
+def reset_users(db):
+    try:
+        # db_users = db.query(models.User).all()
+        db.query(models.User).delete()
+        db.commit()
+        return "Users deleted."
+    except Exception as e:
+        print(e)
+        db.rollback()
+        return e.with_traceback(sys.exc_info()[2])
 
 
 import jwt
