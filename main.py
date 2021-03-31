@@ -17,6 +17,7 @@ from controllers.ruangan_controller import *
 from controllers.jenis_sarana_controller import *
 from controllers.instalasi_controller import *
 from controllers.sarana_controller import *
+from controllers.kategori_masalah_controller import *
 import schemas.user_schema as user_schema, schemas.pegawai_schema as pegawai_schema
 from schemas.instalasi_schema import InstalasiGetAll
 from schemas.sarana_schema import SaranaCreate, SaranaUpdate
@@ -36,19 +37,7 @@ def get_db():
         db.close()
 
 async def get_current_user(request: Request, db: Session = Depends(get_db)) -> Any:
-    credentials_exception = HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Could not validate credentials", headers = {"WWW-Authenticate": "Authorization"})
-    token = None
-    try:
-        token = request.headers["Authorization"]
-        decoded_token = decode_access_token(data=token)
-        username = decoded_token["sub"] if decoded_token["sub"] else None
-    except (PyJWTError, KeyError):
-        raise credentials_exception
-    user = is_token(db=db, username=username, token=token)
-    print(user)
-    if user is None:
-        raise credentials_exception
-    return user
+    return get_current_user_controller(request=request, db=db)
 
 
 @app.post("/file")
@@ -80,14 +69,41 @@ async def create_upload_file(file: UploadFile = File(...)):
     #         "file": ''}
     return Response(content=img, media_type=file.content_type)
 
+
+# ============================== User ============================== #
 @app.delete("/users")
 def api_reset_users(db: Session = Depends(get_db), code: str = Form(...)):
     if code == 'utuhmbak':
         return {"status": True, "message": "Sukses", "data": reset_users(db=db)}
     else:
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Code not valid.")
+@app.post("/login")
+def app_login_user(username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+    db_user = get_user_by_username(db=db, username=username)
+    if db_user is None:
+        raise HTTPException(status_code=400, detail="Username tidak ditemukan.")
+    else:
+        user = user_schema.UserLogin(username=username, password=password)
+        is_password_correct = check_username_password(db, user)
+        if is_password_correct is False:
+            raise HTTPException(status_code=400, detail="Password salah.")
+        else:
+            access_token = create_permanent_access_token(data={"sub": username}, db=db)
+            return {"status": True, "message": "sukses", "data": vars(
+                    user_schema.UserRegistered(username=username,api_token=access_token))}
+@app.post("/register")
+def app_registering_user(username: str = Form(...), password: str = Form(...),
+                     email: str = Form(...), id_pegawai: str = Form(...),
+                     db: Session=Depends(get_db)):
+    user = user_schema.UserRegister(username=username, password=password,email=email, id_pegawai=id_pegawai)
+    db_user = get_user_by_username(db=db, username=user.username)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Username sudah terpakai.")
+    else:
+        return {"status": True, "message": "sukses", "data": create_user(db=db, user=user)}
 
 
+# ============================== Pegawai ============================== #
 @app.get("/pegawai")
 def app_get_pegawai(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
     return {"status": True, "message": "sukses", "data": get_pegawai_all(db=db)}
@@ -97,7 +113,7 @@ def app_get_pegawai(id: str, db: Session = Depends(get_db),current_user: user_sc
 @app.post("/pegawai")
 def get_pegawai(nama: str = Form(...), db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
     return {"status": True, "message": "sukses", "data": get_pegawai_by_nama(db=db, nama=nama)}
-@app.post("/pegawai/seed")
+@app.post("/pegawai/seed/")
 def app_seed_pegawai(db: Session = Depends(get_db), code: str = Form(...)):
     if code == 'utuhmbak':
         return {"status": True, "message": "sukses", "data": seed_pegawai(db=db)}
@@ -110,6 +126,8 @@ def app_reset_pegawai(db: Session = Depends(get_db), code: str = Form(...)):
     else:
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Code not valid.")
 
+
+# ============================== Ruangan ============================== #
 @app.get("/ruangan")
 def app_get_ruangan(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
     return {"status": True, "message": "sukses", "data": get_ruangan(db=db)}
@@ -127,7 +145,7 @@ def app_reset_ruangan(db: Session = Depends(get_db), code: str = Form(...)):
         raise HTTPException(status_code = status.HTTP_423_LOCKED, detail = "Code not valid.")
 
 
-
+# ============================== Instalasi ============================== #
 @app.get("/instalasi")
 def app_get_instalasi(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
     return {"status": True, "message": "sukses", "data": get_instalasi(db=db)}
@@ -145,6 +163,7 @@ def app_reset_instalasi(db: Session = Depends(get_db), code: str = Form(...)):
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Code not valid.")
 
 
+# ============================== Jenis Sarana / jenis_sarana ============================== #
 @app.get("/jenissarana")
 def app_get_jenis_sarana(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
     return {"status": True, "message": "sukses", "data": get_jenis_sarana_all(db=db)}
@@ -162,6 +181,7 @@ def app_reset_jenis_sarana(db: Session = Depends(get_db), code: str = Form(...))
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Code not valid.")
 
 
+# ============================== Sarana ============================== #
 @app.post("/sarana")
 def app_create_sarana(nama: str = Form(...), id_ruangan: int = Form(...),
                 id_jenis: int = Form(...), foto: Optional[UploadFile] = File(None),
@@ -176,7 +196,7 @@ def app_create_sarana(nama: str = Form(...), id_ruangan: int = Form(...),
 def app_update_sarana(id: int = Form(...), nama: Optional[str] = Form(None), id_ruangan: Optional[int] = Form(None),
                 berat: Optional[str] = Form(None), panjang: Optional[str] = Form(None), tinggi: Optional[str] = Form(None), lebar: Optional[str] = Form(None),
                 id_jenis: Optional[int] = Form(None), foto: Optional[UploadFile] = File(None),
-                # current_user: user_schema.User = Depends(get_current_user),
+                current_user: user_schema.User = Depends(get_current_user),
                 db: Session = Depends(get_db)):
     sarana = SaranaUpdate(id=id,nama=nama,id_ruangan=id_ruangan,id_jenis=id_jenis,
                           berat=berat,panjang=panjang,tinggi=tinggi,lebar=lebar)
@@ -204,32 +224,26 @@ def app_reset_sarana(db: Session = Depends(get_db), code: str = Form(...)):
     else:
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Code not valid.")
 
-# @app.get("/percobaan")
-# def percobaan():
-#     return {"status": True, "message": "sukses", "data": put_file()}
 
-@app.post("/login")
-def app_login_user(username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
-    db_user = get_user_by_username(db=db, username=username)
-    if db_user is None:
-        raise HTTPException(status_code=400, detail="Username tidak ditemukan.")
+# ============================== Kategori Masalah ============================== #
+@app.get("/kategorimasalah")
+def app_get_kategori_masalah(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
+    return {"status": True, "message": "sukses", "data": get_kategori_masalah_all(db=db)}
+@app.post("/kategorimasalah/seed/")
+def app_seed_kategori_masalah(db: Session = Depends(get_db), code: str = Form(...)):
+    if code == 'utuhmbak':
+        return {"status": True, "message": "sukses", "data": seed_kategori_masalah(db=db)}
     else:
-        user = user_schema.UserLogin(username=username, password=password)
-        is_password_correct = check_username_password(db, user)
-        if is_password_correct is False:
-            raise HTTPException(status_code=400, detail="Password salah.")
-        else:
-            access_token = create_permanent_access_token(data={"sub": username}, db=db)
-            return {"status": True, "message": "sukses", "data": vars(
-                    user_schema.UserRegistered(username=username,api_token=access_token))}
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Code not valid.")
+@app.delete("/kategorimasalah/reset/")
+def app_reset_kategori_masalah(db: Session = Depends(get_db), code: str = Form(...)):
+    if code == 'utuhmbak':
+        return {"status": True, "message": "sukses", "data": reset_kategori_masalah(db=db)}
+    else:
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Code not valid.")
 
-@app.post("/register")
-def app_registering_user(username: str = Form(...), password: str = Form(...),
-                     email: str = Form(...), id_pegawai: str = Form(...),
-                     db: Session=Depends(get_db)):
-    user = user_schema.UserRegister(username=username, password=password,email=email, id_pegawai=id_pegawai)
-    db_user = get_user_by_username(db=db, username=user.username)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Username sudah terpakai.")
-    else:
-        return {"status": True, "message": "sukses", "data": create_user(db=db, user=user)}
+
+# ============================== Masalah ============================== #
+@app.get("/masalah")
+def percobaan(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
+    return {"status": True, "message": "sukses", "data": get_all_masalah(db=db)}

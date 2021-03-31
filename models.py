@@ -20,9 +20,9 @@ class User(Base):
     deleted_at = Column(DateTime, nullable=True)
 
     pegawai = relationship("Pegawai", back_populates="user")
-    masalah_lv1 = relationship("Masalah", back_populates="disposisi_1")
-    masalah_lv2 = relationship("Masalah", back_populates="disposisi_2")
-    masalah_lv3 = relationship("Masalah", back_populates="disposisi_3")
+    # masalah_lv1 = relationship("Masalah", back_populates="disposisi_1")
+    # masalah_lv2 = relationship("Masalah", back_populates="disposisi_2")
+    # masalah_lv3 = relationship("Masalah", back_populates="disposisi_3")
 
 
 class Pegawai(Base):
@@ -125,13 +125,13 @@ class Masalah(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     deskripsi = Column(Text)
-    id_user = Column(Integer, ForeignKey("users.id"))
-    id_kategori_masalah = Column(Integer, ForeignKey("kategori_masalah.id"))
-    id_ruangan = Column(Integer, ForeignKey("ruangan.id"))
-    id_sarana = Column(Integer, ForeignKey("sarana.id"))
-    # id_level_1 = Column(Integer, ForeignKey("users.id"), nullable=True)
-    # id_level_2 = Column(Integer, ForeignKey("users.id"), nullable=True)
-    # id_level_3 = Column(Integer, ForeignKey("users.id"), nullable=True)
+    id_user = Column(Integer, ForeignKey("users.id"), nullable=True)
+    id_kategori_masalah = Column(Integer, ForeignKey("kategori_masalah.id"), nullable=True)
+    id_ruangan = Column(Integer, ForeignKey("ruangan.id"), nullable=True)
+    id_sarana = Column(Integer, ForeignKey("sarana.id"), nullable=True)
+    id_level_1 = Column(Integer, nullable=True)
+    id_level_2 = Column(Integer, nullable=True)
+    id_level_3 = Column(Integer, nullable=True)
     status = Column(Boolean, default=False)
     foto = Column(String, nullable=True)
 
@@ -145,9 +145,9 @@ class Masalah(Base):
     ruangan = relationship("Ruangan", back_populates="masalah")
     sarana = relationship("Sarana", back_populates="masalah")
     tindakan = relationship("Tindakan", back_populates="masalah")
-    disposisi_1 = relationship("User", back_populates="masalah_lv1")
-    disposisi_2 = relationship("User", back_populates="masalah_lv2")
-    disposisi_3 = relationship("User", back_populates="masalah_lv3")
+    # disposisi_1 = relationship("User", back_populates="masalah_lv1")
+    # disposisi_2 = relationship("User", back_populates="masalah_lv2")
+    # disposisi_3 = relationship("User", back_populates="masalah_lv3")
 
 class Tindakan(Base):
     __tablename__ = "tindakan"

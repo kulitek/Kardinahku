@@ -1,44 +1,37 @@
 from typing import List, Optional, Dict
 from pydantic import BaseModel, Field
 from datetime import datetime
+from fastapi import UploadFile
 
 
 class MasalahBase(BaseModel):
     _repr_hide = ['created_at', 'updated_at', 'deleted_at']
     deskripsi: Optional[str]
 
-class MasalahRegister(MasalahBase):
-    password: str
-    email: str
-    id_pegawai: int
-    role: Optional[str]
-
-class MasalahRegistered(MasalahBase):
-    api_token: str
-
-class MasalahLogin(MasalahBase):
-    password: str
+class MasalahCreate(MasalahBase):
+    id_user: int
+    id_kategori_masalah: int
+    id_ruangan: int
+    id_sarana: int
+    foto: Optional[UploadFile]
 
 class MasalahUpdate(MasalahBase):
     id: int
-    email: Optional[str]
-    role: Optional[str]
-    is_active: Optional[bool]
+    id_user: Optional[int]
+    id_kategori_masalah: Optional[int]
+    id_ruangan: Optional[int]
+    id_sarana: Optional[int]
+    status: Optional[bool]
+    foto: Optional[UploadFile]
 
-class Masalah(MasalahBase):
+class MasalahInfo(MasalahBase):
     id: Optional[int]
-    email: Optional[str]
-    role: Optional[str]
-    id_pegawai: Optional[str]
-    token: Optional[str]
+    id_user: Optional[int]
+    id_kategori_masalah: Optional[int]
+    id_ruangan: Optional[int]
+    id_sarana: Optional[int]
+    status: bool
+    foto: Optional[str]
 
     class Config:
         orm_mode = True
-
-class Token(BaseModel):
-    status: bool
-    message: str
-    data: MasalahRegistered
-
-class TokenData(BaseModel):
-    username: str = None

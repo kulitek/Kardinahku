@@ -6,7 +6,11 @@ from sqlalchemy.orm import Session
 import models
 import schemas.user_schema  as schema
 import bcrypt
+from fastapi import Depends, FastAPI, HTTPException, Request
+from starlette import status
+from typing import Any
 from datetime import datetime, timedelta
+from jwt import PyJWTError
 
 
 def get_user_by_username(db: Session, username: str):
@@ -50,6 +54,21 @@ def reset_users(db):
         print(e)
         db.rollback()
         return e.with_traceback(sys.exc_info()[2])
+
+
+def get_current_user_controller(request: Request, db: Session) -> Any:
+    credentials_exception = HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Could not validate credentials", headers = {"WWW-Authenticate": "Authorization"})
+    token = None
+    try:
+        token = request.headers["Authorization"]
+        decoded_token = decode_access_token(data=token)
+        username = decoded_token["sub"] if decoded_token["sub"] else None
+    except (PyJWTError, KeyError):
+        raise credentials_exception
+    user = is_token(db=db, username=username, token=token)
+    if user is None:
+        raise credentials_exception
+    return user
 
 
 import jwt

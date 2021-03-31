@@ -3,92 +3,118 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
 
 from sqlalchemy.orm import Session
-import models
-import schemas.user_schema  as schema
+from models import Masalah
+from schemas.masalah_schema import *
 import bcrypt
 from datetime import datetime, timedelta
 
+MASALAH_PATH = r'assets/masalah/'
 
-def get_user_by_username(db: Session, username: str):
-    return db.query(models.User).filter(
-        models.User.username == username,
-        models.User.deleted_at == None).first()
+def create_file(foto: UploadFile):
+    global MASALAH_PATH
+    new_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 6))
+    file_type = ''.join([r'.',foto.filename.split(r'.')[-1]])
+    new_name = new_name.replace(" ", r'-') + '__' + str(datetime.now().strftime(r'%Y%m%d%H%M%S')) + file_type
+    pl.Path(r'{}{}'.format(MASALAH_PATH, new_name)).write_bytes(foto.file.read())
+    foto.file.close()
+    return r'{}{}'.format(MASALAH_PATH, new_name)
+
+def put_file(foto: UploadFile, old_name):
+    pl.Path(r'{}'.format(old_name)).unlink()
+    return create_file(foto)
+
+def get_masalah_by_deskripsi(db: Session, deskripsi: str):
+    try:
+        return db.query(Masalah).filter(
+        Masalah.deskripsi == deskripsi,
+        Masalah.deleted_at == None).first()
+    except Exception as e:
+        print(e)
+        db.rollback()
+        return False
+
+
+def get_all_masalah(db: Session):
+    try:
+        db_masalah = db.query()
+    except Exception as e:
+        print('get_all_masalah',e)
+        db.rollback()
+        return False
 
 
 def get_user_by_id(db: Session, id: int):
-    return db.query(models.User).filter(
-        models.User.id == id,
-        models.User.deleted_at == None,).first()
+    try:
+        return db.query(Masalah).filter(
+        Masalah.id == id,
+        Masalah.deleted_at == None,).first()
+    except Exception as e:
+        print(e)
+        db.rollback()
+        return False
 
 
-def create_user(db: Session, user: schema.UserRegister):
-    hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
-    db_user = models.User(username=user.username,
-                          password=hashed_password.decode('utf-8'),
-                          # password=hashed_password, # for instead of postgresql
-                          id_pegawai=user.id_pegawai,
-                          email=user.email)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+def create_user(db: Session, masalah: MasalahCreate):
+    db_masalah = Masalah(deskripsi=masalah.deskripsi,
+                          id_user=masalah.id_user,
+                          id_kategori_masalah=masalah.id_kategori_masalah,
+                          id_ruangan=masalah.id_ruangan,
+                          id_sarana=masalah.id_sarana)
+    db_masalah.foto = create_file(masalah.foto) if masalah.foto else None
+    try:
+        db.add(db_masalah)
+        db.commit()
+        db.refresh(db_masalah)
+        return db_masalah
+    except Exception as e:
+        print(e)
+        db.rollback()
+        return False
 
 
-def check_username_password(db: Session, user: schema.UserLogin):
-    db_user_info: models.User = get_user_by_username(db, username=user.username)
-    # print(db_user_info.password.decode('utf-8'))
-    return bcrypt.checkpw(user.password.encode('utf-8'), db_user_info.password.encode('utf-8'))
+def update_masalah(db: Session, masalah: MasalahUpdate):
+    db_masalah = db.query(Masalah).filter(Masalah.id == masalah.id, Masalah.deleted_at == None).first()
+    db_masalah.deskripsi = masalah.deskripsi if masalah.deskripsi else db_masalah.deskripsi
+    db_masalah.id_ruangan = masalah.id_ruangan if masalah.id_ruangan else db_masalah.id_ruangan
+    db_masalah.id_kategori_masalah = masalah.id_kategori_masalah if masalah.id_kategori_masalah else db_masalah.id_kategori_masalah
+    db_masalah.id_sarana = masalah.id_sarana if masalah.id_sarana else db_masalah.id_sarana
+    db_masalah.status = masalah.status if masalah.status else db_masalah.status
+    db_masalah.done_at = masalah.done_at if masalah.status else None
+    db_masalah.foto = put_file(masalah.foto, db_masalah.foto) if masalah.foto else db_masalah.foto
+    try:
+        db.commit()
+        db.refresh(db_masalah)
+        return db_masalah
+    except Exception as e:
+        print(e)
+        db.rollback()
+        return False
 
 
+def delete_masalah_by_id(db: Session, id: int):
+    try:
+        db_masalah = db.query(Masalah).filter(Masalah.id == id, Masalah.deleted_at == None).first()
+        db_masalah.deleted_at = datetime.now()
+        db.commit()
+        db.refresh(db_sarana)
+        return db_sarana
+    except Exception as e:
+        print(e)
+        db.rollback()
+        return False
 
-
-
-import jwt
-
-secret_key = "0943lds0o98icjo34kr39fucvoi3n4lkjrf09sd8iocjvl3k4t0f98dusj3kl"
-algorithm = "HS256"
-
-
-def create_access_token(*, data:dict, db: Session, expires_delta: timedelta=None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=algorithm)
-    db_user = get_user_by_username(db=db, username=str)
-    db_user.token = encoded_jwt
-    db.commit()
-    db.refresh(db_user)
-    return encoded_jwt
-
-def is_token(db: Session, username: str, token: str):
-    db_user = get_user_by_username(db=db, username=username)
-    if db_user.token == token:
-        return db_user
-    else:
-        return None
-
-
-def decode_access_token(*, data: str):
-    global secret_key, algorithm
-    to_decode = data
-    return jwt.decode(to_decode, secret_key, algorithms=algorithm)
-
-def create_permanent_access_token(*, data: dict, db: Session):
-    global secret_key
-    encoded_jwt = jwt.encode(data, secret_key, algorithm=algorithm)
-    db_user = get_user_by_username(db=db, username=data["sub"])
-    db_user.token = encoded_jwt
-    db.commit()
-    db.refresh(db_user)
-    return encoded_jwt
-
-
-def check_token(db: Session, username: str, token: str):
-    db_user: models.User = get_user_by_username(db, username=username)
-    if db_user.token == token:
-        return True
-    else:
+def search_masalah(db: Session, key: str):
+    try:
+        db_masalah = db.query(Masalah).join(Masalah.ruangan).join(Masalah.kategori_masalah
+                     ).join(Masalah.sarana).filter(or_(
+            Masalah.deskripsi.ilike(r'%{}%'.format(key)),
+            Masalah.kategori_masalah.property.mapper.class_.kategori.ilike(r'%{}%'.format(key)),
+            Masalah.sarana.property.mapper.class_.nama.ilike(r'%{}%'.format(key)),
+            Masalah.ruangan.property.mapper.class_.nama.ilike(r'%{}%'.format(key),)
+        ), Sarana.deleted_at == None)
+        # masalah = db.query(Sarana).join()
+        return db_masalah.all()
+    except Exception as e:
+        print(e)
+        db.rollback()
         return False

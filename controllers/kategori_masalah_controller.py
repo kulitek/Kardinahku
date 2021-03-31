@@ -3,10 +3,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
 
 from sqlalchemy.orm import Session
-from models import *
+from models import KategoriMasalah
 import bcrypt
 from datetime import datetime, timedelta
 
+
+def get_kategori_masalah_all(db: Session):
+    try:
+        return db.query(KategoriMasalah).all()
+    except Exception as e:
+        print(e)
+        return False
 
 def seed_kategori_masalah(db: Session):
     kategories_masalah = ['ringan','sedang','gawat','sangat gawat', 'darurat','bencana']
