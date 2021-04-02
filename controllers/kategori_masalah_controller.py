@@ -20,8 +20,8 @@ def seed_kategori_masalah(db: Session):
     if db is None:
         db = SessionLocal()
     try:
-        for katmas in kategories_masalah:
-            kategori_masalah = KategoriMasalah(kategori=katmas)
+        for i, katmas in enumerate(kategories_masalah):
+            kategori_masalah = KategoriMasalah(id=i+1,kategori=katmas)
             db.add(kategori_masalah)
             db.commit()
             db.refresh(kategori_masalah)

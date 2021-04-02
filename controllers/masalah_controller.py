@@ -5,7 +5,8 @@ sys.path.append(BASE_DIR)
 from sqlalchemy.orm import Session
 from models import Masalah
 from schemas.masalah_schema import *
-import bcrypt
+import bcrypt, string, random
+import pathlib as pl
 from datetime import datetime, timedelta
 
 MASALAH_PATH = r'assets/masalah/'
@@ -34,16 +35,16 @@ def get_masalah_by_deskripsi(db: Session, deskripsi: str):
         return False
 
 
-def get_all_masalah(db: Session):
+def get_masalah_all(db: Session):
     try:
-        db_masalah = db.query()
+        return db.query(Masalah).filter(Masalah.deleted_at == None).all()
     except Exception as e:
         print('get_all_masalah',e)
         db.rollback()
         return False
 
 
-def get_user_by_id(db: Session, id: int):
+def get_masalah_by_id(db: Session, id: int):
     try:
         return db.query(Masalah).filter(
         Masalah.id == id,
@@ -54,7 +55,7 @@ def get_user_by_id(db: Session, id: int):
         return False
 
 
-def create_user(db: Session, masalah: MasalahCreate):
+def create_masalah(db: Session, masalah: MasalahCreate):
     db_masalah = Masalah(deskripsi=masalah.deskripsi,
                           id_user=masalah.id_user,
                           id_kategori_masalah=masalah.id_kategori_masalah,
@@ -78,6 +79,9 @@ def update_masalah(db: Session, masalah: MasalahUpdate):
     db_masalah.id_ruangan = masalah.id_ruangan if masalah.id_ruangan else db_masalah.id_ruangan
     db_masalah.id_kategori_masalah = masalah.id_kategori_masalah if masalah.id_kategori_masalah else db_masalah.id_kategori_masalah
     db_masalah.id_sarana = masalah.id_sarana if masalah.id_sarana else db_masalah.id_sarana
+    db_masalah.id_level_1 = masalah.id_level_1 if masalah.id_level_1 else db_masalah.id_level_1
+    db_masalah.id_level_2 = masalah.id_level_2 if masalah.id_level_2 else db_masalah.id_level_2
+    db_masalah.id_level_3 = masalah.id_level_3 if masalah.id_level_3 else db_masalah.id_level_3
     db_masalah.status = masalah.status if masalah.status else db_masalah.status
     db_masalah.done_at = masalah.done_at if masalah.status else None
     db_masalah.foto = put_file(masalah.foto, db_masalah.foto) if masalah.foto else db_masalah.foto

@@ -17,7 +17,9 @@ class MasalahCreate(MasalahBase):
 
 class MasalahUpdate(MasalahBase):
     id: int
-    id_user: Optional[int]
+    id_level_1: Optional[int]
+    id_level_2: Optional[int]
+    id_level_3: Optional[int]
     id_kategori_masalah: Optional[int]
     id_ruangan: Optional[int]
     id_sarana: Optional[int]

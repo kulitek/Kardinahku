@@ -17,7 +17,7 @@ def seed_jenis_sarana(db: Session):
     df = df.astype(object).where(pd.notnull(df), None)
     try:
         for i in range(0, df.shape[0]):
-            jenis_sarana = JenisSarana(nama=df.iloc[i]['JenisBarang'])
+            jenis_sarana = JenisSarana(id=i+1,nama=df.iloc[i]['JenisBarang'])
             db.add(jenis_sarana)
             db.commit()
             db.refresh(jenis_sarana)
