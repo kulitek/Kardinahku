@@ -153,6 +153,7 @@ class Tindakan(Base):
     __tablename__ = "tindakan"
 
     id = Column(Integer, primary_key=True, index=True)
+    id_user = Column(Integer, ForeignKey("users.id"), nullable=True)
     kondisi_awal = Column(String)
     tindakan = Column(String)
     id_masalah = Column(Integer, ForeignKey("masalah.id"))
@@ -170,3 +171,4 @@ class Tindakan(Base):
     sarana = relationship("Sarana", back_populates="tindakan")
     ruangan = relationship("Ruangan", back_populates="tindakan")
     masalah = relationship("Masalah", back_populates="tindakan")
+    # user = relationship("User", back_populates="tindakan")

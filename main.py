@@ -243,63 +243,67 @@ def app_reset_kategori_masalah(db: Session = Depends(get_db), code: str = Form(.
 
 # ============================== Masalah ============================== #
 @app.get("/masalah")
-def app_get_masalah(db: Session = Depends(get_db),
-# current_user: user_schema.User = Depends(get_current_user),
-):
+def app_get_masalah(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user),):
     return {"status": True, "message": "sukses", "data": get_masalah_all(db=db)}
 @app.post("/masalah")
 def app_create_masalah(deskripsi: str = Form(...), id_ruangan: int = Form(...), id_sarana: int = Form(...),
                 id_kategori_masalah: int = Form(...), foto: Optional[UploadFile] = File(None),
-                id_user: int = Form(...), # current_user: user_schema.User = Depends(get_current_user),
+                id_user: int = Form(...), current_user: user_schema.User = Depends(get_current_user),
                 db: Session = Depends(get_db)):
     try:
-        masalah = MasalahCreate(deskripsi=deskripsi,id_user=id_user, id_sarana=id_sarana,
+        masalah = MasalahCreate(deskripsi=deskripsi,id_user=current_user.id, id_sarana=id_sarana,
         id_kategori_masalah=id_kategori_masalah,id_ruangan=id_ruangan,foto=foto)
-        print(masalah)
         response = create_masalah(db=db,masalah=masalah)
-        return {"status": response[0], "message": response[1], "data": response[2]}
-    except Exception as e:
-        raise HTTPException(status_code = sts.HTTP_410_GONE,detail="Error = " + str(e))
-    finally:
         del masalah
-        del response
+        return {"status": response[0], "message": response[1], "data": response[2]}
+    except Exception as e: raise HTTPException(status_code = sts.HTTP_410_GONE,detail="Error = " + str(e))
+    finally: del response
 @app.put("/masalah/{id}")
 def app_update_masalah(id: int, deskripsi: Optional[str] = Form(None), id_ruangan: Optional[int] = Form(None),
                 id_level_1: Optional[int] = Form(None), id_level_2: Optional[int] = Form(None),
                 id_level_3: Optional[int] = Form(None), id_sarana: Optional[int] = Form(None),
                 id_kategori_masalah: Optional[int] = Form(None), foto: Optional[UploadFile] = File(None),
-                status: Optional[bool] = Form(None),
-                id_user: int = Form(None),
-                # current_user: user_schema.User = Depends(get_current_user),
+                status: Optional[bool] = Form(None), # id_user: int = Form(None),
+                current_user: user_schema.User = Depends(get_current_user),
                 db: Session = Depends(get_db)):
     try:
         masalah = MasalahUpdate(id=id,deskripsi=deskripsi, id_sarana=id_sarana,
         id_level_1=id_level_1, id_level_2=id_level_2, id_level_3=id_level_3, status=status,
         id_kategori_masalah=id_kategori_masalah,id_ruangan=id_ruangan,foto=foto)
         response = update_masalah(db=db,masalah=masalah)
-        return {"status": response[0], "message": response[1], "data": response[2]}
-    except Exception as e:
-        raise HTTPException(status_code = sts.HTTP_410_GONE,detail="Error = " + str(e))
-    finally:
-        del response
         del masalah
+        return {"status": response[0], "message": response[1], "data": response[2]}
+    except Exception as e: raise HTTPException(status_code = sts.HTTP_410_GONE,detail="Error = " + str(e))
+    finally: del response
 @app.delete("/masalah/{id}")
-async def delete_masalah_id(id: str, db: Session = Depends(get_db), # current_user: user_schema.User = Depends(get_current_user)
-):
+async def delete_masalah_id(id: str, db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
     response = delete_masalah_by_id(db=db, id=id)
     return {"status": response[0], "message": response[1], "data": response[2]}
 @app.get("/masalah/{key}")
-async def search_masalah_flexible(key: str, db: Session = Depends(get_db), # current_user: user_schema.User = Depends(get_current_user)
-):
-    response = search_masalah(db=db, key=key)
-    return {"status": response[0], "message": response[1], "data": response[2]}
+async def search_masalah_flexible(key: str, db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
+    try:
+        response = search_masalah(db=db, key=key)
+        return {"status": response[0], "message": response[1], "data": response[2]}
+    except Exception as e:
+        return {"status": False, "message": "gagal", "data": []}
+    finally: del response
 # @app.get("/masalah/{key}")
 # async def search_masalah_disposisi(key: str, db: Session = Depends(get_db), # current_user: user_schema.User = Depends(get_current_user)
 # ):
 #     response = search_masalah_by_disposisi(db=db, key=key)
 #     return {"status": response[0], "message": response[1], "data": response[2]}
 @app.get("/masalah/id/{id}")
-async def get_masalah_id(id: int, db: Session = Depends(get_db), # current_user: user_schema.User = Depends(get_current_user)
+async def get_masalah_id(id: int, db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
+    try:
+        response = get_masalah_by_id(db=db, id=id)
+        return {"status": response[0], "message": response[1], "data": response[2]}
+    except Exception as e:
+        return {"status": False, "message": "gagal", "data": []}
+    finally: del response
+
+
+# ============================== Tindakan ============================== #
+@app.get("/tindakan")
+def app_get_masalah(db: Session = Depends(get_db), # current_user: user_schema.User = Depends(get_current_user),
 ):
-    response = get_masalah_by_id(db=db, id=id)
-    return {"status": response[0], "message": response[1], "data": response[2]}
+    return {"status": True, "message": "sukses", "data": get_masalah_all(db=db)}
