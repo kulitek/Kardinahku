@@ -7,11 +7,11 @@ from pydantic import BaseModel
 from datetime import datetime
 
 
-class KategoriMasalahBase(BaseModel):
+class KategoriTindakanBase(BaseModel):
     _repr_hide = ['created_at', 'updated_at', 'deleted_at']
     kategori: str
 
-class KategoriMasalah(KategoriMasalahBase):
+class KategoriTindakan(KategoriTindakanBase):
     id: int
 
 # class InstalasiInfo(InstalasiBase):

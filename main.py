@@ -19,7 +19,9 @@ from controllers.jenis_sarana_controller import *
 from controllers.instalasi_controller import *
 from controllers.sarana_controller import *
 from controllers.kategori_masalah_controller import *
+from controllers.kategori_tindakan_controller import *
 from controllers.masalah_controller import *
+from controllers.tindakan_controller import *
 import schemas.user_schema as user_schema, schemas.pegawai_schema as pegawai_schema
 from schemas.instalasi_schema import InstalasiGetAll
 from schemas.sarana_schema import SaranaCreate, SaranaUpdate
@@ -244,12 +246,14 @@ def app_reset_kategori_masalah(db: Session = Depends(get_db), code: str = Form(.
 # ============================== Masalah ============================== #
 @app.get("/masalah")
 def app_get_masalah(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user),):
-    return {"status": True, "message": "sukses", "data": get_masalah_all(db=db)}
+    try: return {"status": True, "message": "sukses", "data": get_masalah_all(db=db)}
+    except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
 @app.post("/masalah")
 def app_create_masalah(deskripsi: str = Form(...), id_ruangan: int = Form(...), id_sarana: int = Form(...),
                 id_kategori_masalah: int = Form(...), foto: Optional[UploadFile] = File(None),
                 id_user: int = Form(...), current_user: user_schema.User = Depends(get_current_user),
                 db: Session = Depends(get_db)):
+    response = None
     try:
         masalah = MasalahCreate(deskripsi=deskripsi,id_user=current_user.id, id_sarana=id_sarana,
         id_kategori_masalah=id_kategori_masalah,id_ruangan=id_ruangan,foto=foto)
@@ -266,6 +270,7 @@ def app_update_masalah(id: int, deskripsi: Optional[str] = Form(None), id_ruanga
                 status: Optional[bool] = Form(None), # id_user: int = Form(None),
                 current_user: user_schema.User = Depends(get_current_user),
                 db: Session = Depends(get_db)):
+    response = None
     try:
         masalah = MasalahUpdate(id=id,deskripsi=deskripsi, id_sarana=id_sarana,
         id_level_1=id_level_1, id_level_2=id_level_2, id_level_3=id_level_3, status=status,
@@ -277,10 +282,15 @@ def app_update_masalah(id: int, deskripsi: Optional[str] = Form(None), id_ruanga
     finally: del response
 @app.delete("/masalah/{id}")
 async def delete_masalah_id(id: str, db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
-    response = delete_masalah_by_id(db=db, id=id)
-    return {"status": response[0], "message": response[1], "data": response[2]}
+    response = None
+    try:
+        response = delete_masalah_by_id(db=db, id=id)
+        return {"status": response[0], "message": response[1], "data": response[2]}
+    except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
+    finally: del response
 @app.get("/masalah/{key}")
 async def search_masalah_flexible(key: str, db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
+    response = None
     try:
         response = search_masalah(db=db, key=key)
         return {"status": response[0], "message": response[1], "data": response[2]}
@@ -294,6 +304,7 @@ async def search_masalah_flexible(key: str, db: Session = Depends(get_db), curre
 #     return {"status": response[0], "message": response[1], "data": response[2]}
 @app.get("/masalah/id/{id}")
 async def get_masalah_id(id: int, db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
+    response = None
     try:
         response = get_masalah_by_id(db=db, id=id)
         return {"status": response[0], "message": response[1], "data": response[2]}
@@ -302,8 +313,65 @@ async def get_masalah_id(id: int, db: Session = Depends(get_db), current_user: u
     finally: del response
 
 
+
+
+# ============================== Kategori Tindakan ============================== #
+@app.get("/kategoritindakan")
+def app_get_kategori_tindakan(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
+    return {"status": True, "message": "sukses", "data": get_kategori_tindakan_all(db=db)}
+@app.post("/kategoritindakan/seed/")
+def app_seed_kategori_tindakan(db: Session = Depends(get_db), code: str = Form(...)):
+    if code == 'utuhmbak':
+        return {"status": True, "message": "sukses", "data": seed_kategori_tindakan(db=db)}
+    else:
+        raise HTTPException(status_code = sts.HTTP_401_UNAUTHORIZED, detail = "Code not valid.")
+@app.delete("/kategoritindakan/reset/")
+def app_reset_kategori_tindakan(db: Session = Depends(get_db), code: str = Form(...)):
+    if code == 'utuhmbak':
+        return {"status": True, "message": "sukses", "data": reset_kategori_tindakan(db=db)}
+    else:
+        raise HTTPException(status_code = sts.HTTP_401_UNAUTHORIZED, detail = "Code not valid.")
+
+
+
+
 # ============================== Tindakan ============================== #
 @app.get("/tindakan")
-def app_get_masalah(db: Session = Depends(get_db), # current_user: user_schema.User = Depends(get_current_user),
-):
-    return {"status": True, "message": "sukses", "data": get_masalah_all(db=db)}
+def app_get_tindakan(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user),):
+    return {"status": True, "message": "sukses", "data": get_tindakan_all(db=db)}
+@app.post("/tindakan")
+def app_create_tindakan(kondisi_awal: str = Form(...), tindakan: str = Form(...),
+                kondisi_pasca: Optional[str] = Form(None), id_masalah: int = Form(...),
+                id_ruangan: int = Form(...), id_sarana: int = Form(...),
+                id_kategori: int = Form(...), foto: Optional[UploadFile] = File(None),
+                current_user: user_schema.User = Depends(get_current_user),
+                db: Session = Depends(get_db)):
+    response = None
+    try:
+        tindakan = TindakanCreate(kondisi_awal=kondisi_awal,tindakan=tindakan,
+        kondisi_pasca=kondisi_pasca,id_user=current_user.id, id_masalah=id_masalah,
+        id_sarana=id_sarana, id_kategori=id_kategori,
+        id_ruangan=id_ruangan, foto=foto)
+        response = create_tindakan(db=db,tindakan=tindakan)
+        del tindakan
+        return {"status": response[0], "message": response[1], "data": response[2]}
+    except Exception as e: raise HTTPException(status_code = sts.HTTP_410_GONE,detail="Error = " + str(e))
+    finally: del response
+@app.put("/tindakan/{id}")
+def app_create_tindakan(id: int, kondisi_awal: Optional[str] = Form(None), tindakan: Optional[str] = Form(None),
+                kondisi_pasca: Optional[str] = Form(None), id_masalah: Optional[int] = Form(None),
+                id_ruangan: Optional[int] = Form(None), id_sarana: Optional[int] = Form(None),
+                id_kategori: Optional[int] = Form(None), foto: Optional[UploadFile] = File(None),
+                current_user: user_schema.User = Depends(get_current_user),
+                db: Session = Depends(get_db)):
+    response = None
+    try:
+        tindakan = TindakanUpdate(id=id,kondisi_awal=kondisi_awal,tindakan=tindakan,
+        kondisi_pasca=kondisi_pasca,id_user=current_user.id, id_masalah=id_masalah,
+        id_sarana=id_sarana, id_kategori=id_kategori,
+        id_ruangan=id_ruangan, foto=foto)
+        response = create_tindakan(db=db,tindakan=tindakan)
+        del tindakan
+        return {"status": response[0], "message": response[1], "data": response[2]}
+    except Exception as e: raise HTTPException(status_code = sts.HTTP_410_GONE,detail="Error = " + str(e))
+    finally: del response

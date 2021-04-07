@@ -100,7 +100,7 @@ def update_masalah(db: Session, masalah: MasalahUpdate):
     db_masalah.id_level_2 = masalah.id_level_2 if masalah.id_level_2 else db_masalah.id_level_2
     db_masalah.id_level_3 = masalah.id_level_3 if masalah.id_level_3 else db_masalah.id_level_3
     db_masalah.status = masalah.status if masalah.status else db_masalah.status
-    db_masalah.done_at = masalah.done_at if masalah.status else None
+    db_masalah.done_at = datetime.now() if masalah.status else None
     db_masalah.foto = put_file(masalah.foto, db_masalah.foto) if masalah.foto else db_masalah.foto
     try:
         db.commit()
