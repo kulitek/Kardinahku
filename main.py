@@ -375,3 +375,11 @@ def app_create_tindakan(id: int, kondisi_awal: Optional[str] = Form(None), tinda
         return {"status": response[0], "message": response[1], "data": response[2]}
     except Exception as e: raise HTTPException(status_code = sts.HTTP_410_GONE,detail="Error = " + str(e))
     finally: del response
+@app.delete("/tindakan/{id}")
+async def delete_tindakan_id(id: str, db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
+    response = None
+    try:
+        response = delete_tindakan_by_id(db=db, id=id)
+        return {"status": response[0], "message": response[1], "data": response[2]}
+    except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
+    finally: del response
