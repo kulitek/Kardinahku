@@ -251,7 +251,7 @@ def app_get_masalah(db: Session = Depends(get_db), current_user: user_schema.Use
 @app.post("/masalah")
 def app_create_masalah(deskripsi: str = Form(...), id_ruangan: int = Form(...), id_sarana: int = Form(...),
                 id_kategori_masalah: int = Form(...), foto: Optional[UploadFile] = File(None),
-                id_user: int = Form(...), current_user: user_schema.User = Depends(get_current_user),
+                current_user: user_schema.User = Depends(get_current_user), # id_user: int = Form(...),
                 db: Session = Depends(get_db)):
     response = None
     try:
