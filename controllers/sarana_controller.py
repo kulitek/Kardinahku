@@ -41,6 +41,16 @@ def get_sarana_all(db: Session):
     else:
         del db_sarana
 
+def get_sarana_by_id(db: Session, id: int):
+    try:
+        db_sarana = db.query(Sarana).filter(Sarana.id == id, Sarana.deleted_at == None).first()
+        db_sarana.ruangan
+        return db_sarana
+    except Exception as e:
+        print(e)
+        return None
+    else: del db_sarana
+
 def create_file(foto: UploadFile):
     global SARANA_PATH
     new_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 6))
