@@ -205,9 +205,11 @@ def app_update_sarana(id: int = Form(...), nama: Optional[str] = Form(None), id_
 async def delete_sarana_id(id: str, db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
     return {"status": True, "message": "sukses", "data": await delete_sarana(db=db, id=id)}
 @app.get("/sarana")
-async def app_get_sarana_all(db: Session = Depends(get_db), # current_user: user_schema.User = Depends(get_current_user)
-):
+async def app_get_sarana_all(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
     return {"status": True, "message": "sukses", "data": get_sarana_all(db=db)}
+@app.get("/sarana/id/{id}")
+async def app_get_sarana_with_id(id: int, db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
+    return {"status": True, "message": "sukses", "data": get_sarana_by_id(db=db, id=id)}
 @app.get("/sarana/{key}")
 async def app_search_sarana(key: str, db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
     return {"status": True, "message": "sukses", "data": search_sarana(db=db,key=key)}
