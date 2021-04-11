@@ -31,10 +31,15 @@ SARANA_PATH = r'assets/sarana/'
 
 def get_sarana_all(db: Session):
     try:
-        return db.query(Sarana).join(Sarana.ruangan).filter(Sarana.deleted_at == None).all()
+        db_sarana = db.query(Sarana).join(Sarana.ruangan).filter(Sarana.deleted_at == None).all()
+        for sarana in db_sarana:
+            sarana.ruangan
+        return db_sarana
     except Exception as e:
         print(e)
-        return False
+        return None
+    else:
+        del db_sarana
 
 def create_file(foto: UploadFile):
     global SARANA_PATH
