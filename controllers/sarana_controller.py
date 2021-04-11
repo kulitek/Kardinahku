@@ -31,7 +31,7 @@ SARANA_PATH = r'assets/sarana/'
 
 def get_sarana_all(db: Session):
     try:
-        return db.query(Sarana).filter(Sarana.deleted_at == None).all()
+        return db.query(Sarana).join(Sarana.ruangan).filter(Sarana.deleted_at == None).all()
     except Exception as e:
         print(e)
         return False
