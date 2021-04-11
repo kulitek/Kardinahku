@@ -341,6 +341,12 @@ def app_reset_kategori_tindakan(db: Session = Depends(get_db), code: str = Form(
 @app.get("/tindakan")
 def app_get_tindakan(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user),):
     return {"status": True, "message": "sukses", "data": get_tindakan_all(db=db)}
+@app.get("/tindakan/{key}")
+def app_search_tindakan(key: str, db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user),):
+    return {"status": True, "message": "sukses", "data": search_tindakan(db=db, key=key)}
+@app.get("/tindakan/id/{id}")
+def app_get_tindakan_by_id(id: int, db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user),):
+    return {"status": True, "message": "sukses", "data": get_tindakan_by_id(db=db, id=id)}
 @app.post("/tindakan")
 def app_create_tindakan(kondisi_awal: str = Form(...), tindakan: str = Form(...),
                 kondisi_pasca: Optional[str] = Form(None), id_masalah: int = Form(...),
