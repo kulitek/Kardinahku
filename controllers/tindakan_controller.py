@@ -49,23 +49,11 @@ def get_tindakan_all(db: Session):
 
 def get_tindakan_by_id(db: Session, id: int):
     try:
-        db_tindakan = db.query(Tindakan).filter(Tindakan.id == id, Tindakan.deleted_at == None).first()
-        disposisi_1 = db.query(User).filter(User.deleted_at == None, User.id == db_tindakan.id_level_1).first()
-        setattr(db_tindakan, 'disposisi_1', disposisi_1.pegawai if disposisi_1 else None)
-        disposisi_2 = db.query(User).filter(User.deleted_at == None, User.id == db_tindakan.id_level_2).first()
-        setattr(db_tindakan, 'disposisi_2', disposisi_2.pegawai if disposisi_2 else None)
-        disposisi_3 = db.query(User).filter(User.deleted_at == None, User.id == db_tindakan.id_level_3).first()
-        setattr(db_tindakan, 'disposisi_3', disposisi_3.pegawai if disposisi_3 else None)
-        return [True, "sukses", db_tindakan]
+        return [True, "sukses", db.query(Tindakan).filter(Tindakan.id == id, Tindakan.deleted_at == None).first()]
     except Exception as e:
         print(e)
         db.rollback()
         return [False, "gagal", []]
-    # finally:
-    #     del db_tindakan
-    #     del disposisi_1
-    #     del disposisi_2
-    #     del disposisi_3
 
 
 def create_tindakan(db: Session, tindakan: TindakanCreate):
@@ -128,26 +116,16 @@ def delete_tindakan_by_id(db: Session, id: int):
 def search_tindakan(db: Session, key: str):
     try:
         db_tindakan = db.query(Tindakan).join(Tindakan.ruangan).join(Tindakan.kategori_tindakan
-                     ).join(Tindakan.sarana).join(User).join(Pegawai).filter(or_(
+                     ).join(Tindakan.sarana).join(Tindakan.masalah).filter(or_(
             Tindakan.kondisi_awal.ilike(r'%{}%'.format(key)),
+            Tindakan.tindakan.ilike(r'%{}%'.format(key)),
+            Tindakan.kondisi_pasca.ilike(r'%{}%'.format(key)),
             Tindakan.kategori_tindakan.property.mapper.class_.kategori.ilike(r'%{}%'.format(key)),
             Tindakan.sarana.property.mapper.class_.nama.ilike(r'%{}%'.format(key)),
             Tindakan.ruangan.property.mapper.class_.nama.ilike(r'%{}%'.format(key),),
-            User.pegawai.property.mapper.class_.nama_lengkap.ilike(r'%{}%'.format(key)),
-
-            Tindakan.sarana.property.mapper.class_.nama.ilike(r'%{}%'.format(key)),
-            Tindakan.sarana.property.mapper.class_.nama.ilike(r'%{}%'.format(key)),
+            Tindakan.masalah.property.mapper.class_.deskripsi.ilike(r'%{}%'.format(key)),
         ), Tindakan.deleted_at == None)
-        # tindakan = db.query(Sarana).join()
         return [True, "sukses", db_tindakan.all()]
-    except Exception as e:
-        print(e)
-        db.rollback()
-        return [False, "gagal", []]
-
-def search_tindakan_by_disposisi(db: Session, key: str):
-    try:
-        db_tindakan = db.query(Tindakan)
     except Exception as e:
         print(e)
         db.rollback()
