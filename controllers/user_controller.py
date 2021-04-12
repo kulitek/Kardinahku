@@ -109,9 +109,10 @@ def create_permanent_access_token(*, data: dict, db: Session):
     encoded_jwt = jwt.encode(data, secret_key, algorithm=algorithm)
     db_user = get_user_by_username(db=db, username=data["sub"])
     db_user.token = str(encoded_jwt).replace("b'","").replace("'","")
+    print(db_user.token)
     db.commit()
     db.refresh(db_user)
-    return encoded_jwt
+    return db_user.token
 
 
 def check_token(db: Session, username: str, token: str):
