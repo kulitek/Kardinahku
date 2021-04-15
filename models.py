@@ -25,6 +25,12 @@ class User(Base):
     # masalah_lv3 = relationship("Masalah", back_populates="disposisi_3")
 
 
+# class Role(Base):
+#     __tablename__ = "roles"
+#     id = Column(Integer, primary_key=True, index=True)
+#     role = Column(String(15))
+
+
 class Pegawai(Base):
     __tablename__ = "pegawai"
 

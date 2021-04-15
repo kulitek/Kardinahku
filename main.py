@@ -6,6 +6,7 @@ from fastapi import Depends, FastAPI, HTTPException, logger, Request, File, Uplo
 from starlette import status as sts
 from typing import List, Any, Iterator, Optional
 from urllib.parse import quote
+import traceback
 # from fastapi_pagination import Page, add_pagination, paginate
 
 import models, string, random
@@ -43,6 +44,12 @@ def get_db():
 
 async def get_current_user(request: Request, db: Session = Depends(get_db)) -> Any:
     return get_current_user_controller(request=request, db=db)
+async def get_current_admin(request: Request, db: Session = Depends(get_db)) -> Any:
+    return role_checker_admin(request=request, db=db)
+async def get_current_sub_admin(request: Request, db: Session = Depends(get_db)) -> Any:
+    return role_checker_sub_admin(request=request, db=db)
+async def get_current_operator(request: Request, db: Session = Depends(get_db)) -> Any:
+    return role_checker_operator(request=request, db=db)
 
 
 @app.get("/file/assets/sarana/{filename}")
@@ -70,6 +77,25 @@ async def create_upload_file(file: UploadFile = File(...)):
 
 
 # ============================== User ============================== #
+@app.get("/users")
+def api_get_all_users(db: Session = Depends(get_db)):
+    try: return {"status": True, "message": "sukses", "data": get_all_users(db=db)}
+    except Exception: return {"status": True, "message": traceback.format_exc(), "data": []}
+@app.get("/users/current")
+def api_get_all_users(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
+
+    try: return {"status": True, "message": "sukses", "data": {"username": current_user.username, "role": current_user.role}}
+    except Exception: return {"status": True, "message": traceback.format_exc(), "data": ""}
+@app.post("/users/role/{id}")
+def api_update_role_by_id(id: int, db: Session = Depends(get_db), code: str = Form(...), # current_user: user_schema.User = Depends(get_current_super_admin),
+role: str = Form(...)):
+    if code == 'utuhmbak':
+        try:
+            response = update_user_role_by_id(db=db,id=id,role=role)
+            return {"status": response[0], "message": response[1], "data": response[2]}
+        except Exception: return {"status": True, "message": traceback.format_exc(), "data": []}
+        else: del response
+    else: return {"status": False,"message": "code invalid."}
 @app.delete("/users")
 def api_reset_users(db: Session = Depends(get_db), code: str = Form(...)):
     if code == 'utuhmbak':
@@ -89,7 +115,7 @@ def app_login_user(username: str = Form(...), password: str = Form(...), db: Ses
         else:
             access_token = create_permanent_access_token(data={"sub": username}, db=db)
             return {"status": True, "message": "sukses", "data": vars(
-                    user_schema.UserRegistered(username=username,api_token=access_token))}
+                    user_schema.UserRegistered(username=username,api_token=access_token,role=db_user.role))}
 @app.post("/register")
 def app_registering_user(username: str = Form(...), password: str = Form(...),
                      email: str = Form(...), id_pegawai: str = Form(...),
@@ -248,7 +274,37 @@ def app_reset_kategori_masalah(db: Session = Depends(get_db), code: str = Form(.
 # ============================== Masalah ============================== #
 @app.get("/masalah")
 def app_get_masalah(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user),):
-    try: return {"status": True, "message": "sukses", "data": get_masalah_all(db=db)}
+    try: return {"status": True, "message": "sukses", "data": get_masalah_all(db=db, user=current_user)}
+    except Exception as e: return {"status": False, "message": "Error: " + traceback.format_exc(), "data": []}
+@app.get("/masalah/disposisi_1/{disposisi_1}")
+def app_get_masalah_disposisi_1(disposisi_1: int, db: Session = Depends(get_db),
+current_user: user_schema.User = Depends(get_current_admin)):
+    try: return {"status": True, "message": "sukses", "data": get_masalah_by_disposisi_1(db=db, id_disposisi_1=disposisi_1)}
+    except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
+@app.get("/masalah/disposisi_2/{disposisi_2}")
+def app_get_masalah_disposisi_2(disposisi_2: int, db: Session = Depends(get_db),
+current_user: user_schema.User = Depends(get_current_sub_admin)):
+    try: return {"status": True, "message": "sukses", "data": get_masalah_by_disposisi_2(db=db, id_disposisi_2=disposisi_2)}
+    except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
+@app.get("/masalah/disposisi_3/{disposisi_3}")
+def app_get_masalah_disposisi_3(disposisi_3: int, db: Session = Depends(get_db),
+current_user: user_schema.User = Depends(get_current_operator)):
+    try: return {"status": True, "message": "sukses", "data": get_masalah_by_disposisi_3(db=db, id_disposisi_3=disposisi_3)}
+    except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
+@app.post("/masalah/disposisi_1/{disposisi_1}")
+def app_update_masalah_disposisi_1(disposisi_1: int, db: Session = Depends(get_db),
+current_user: user_schema.User = Depends(get_current_admin)):
+    try: return {"status": True, "message": "sukses", "data": update_masalah_by_disposisi_1(db=db, id_disposisi_1=disposisi_1)}
+    except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
+@app.post("/masalah/disposisi_2/{disposisi_2}")
+def app_update_masalah_disposisi_2(disposisi_2: int, db: Session = Depends(get_db),
+current_user: user_schema.User = Depends(get_current_admin)):
+    try: return {"status": True, "message": "sukses", "data": update_masalah_by_disposisi_2(db=db, id_disposisi_2=disposisi_2)}
+    except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
+@app.post("/masalah/disposisi_3/{disposisi_3}")
+def app_update_masalah_disposisi_3(disposisi_3: int, db: Session = Depends(get_db),
+current_user: user_schema.User = Depends(get_current_sub_admin)):
+    try: return {"status": True, "message": "sukses", "data": update_masalah_by_disposisi_3(db=db, id_disposisi_3=disposisi_3)}
     except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
 @app.post("/masalah")
 def app_create_masalah(deskripsi: str = Form(...), id_ruangan: int = Form(...), id_sarana: int = Form(...),
@@ -296,22 +352,15 @@ async def search_masalah_flexible(key: str, db: Session = Depends(get_db), curre
     try:
         response = search_masalah(db=db, key=key)
         return {"status": response[0], "message": response[1], "data": response[2]}
-    except Exception as e:
-        return {"status": False, "message": "gagal", "data": []}
+    except Exception as e: return {"status": False, "message": "gagal", "data": []}
     finally: del response
-# @app.get("/masalah/{key}")
-# async def search_masalah_disposisi(key: str, db: Session = Depends(get_db), # current_user: user_schema.User = Depends(get_current_user)
-# ):
-#     response = search_masalah_by_disposisi(db=db, key=key)
-#     return {"status": response[0], "message": response[1], "data": response[2]}
 @app.get("/masalah/id/{id}")
 async def get_masalah_id(id: int, db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
     response = None
     try:
         response = get_masalah_by_id(db=db, id=id)
         return {"status": response[0], "message": response[1], "data": response[2]}
-    except Exception as e:
-        return {"status": False, "message": "gagal", "data": []}
+    except Exception as e: return {"status": False, "message": "gagal", "data": []}
     finally: del response
 
 

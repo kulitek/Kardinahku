@@ -35,8 +35,7 @@ def get_masalah_by_deskripsi(db: Session, deskripsi: str):
         db.rollback()
         return False
 
-
-def get_masalah_all(db: Session):
+def get_masalah_all(db: Session, user):
     try:
         return db.query(Masalah).filter(Masalah.deleted_at == None).all()
     except Exception as e:
@@ -59,12 +58,81 @@ def get_masalah_by_id(db: Session, id: int):
         print(e)
         db.rollback()
         return [False, "gagal", []]
-    # finally:
-    #     del db_masalah
-    #     del disposisi_1
-    #     del disposisi_2
-    #     del disposisi_3
+    else:
+        del db_masalah
+        del disposisi_1
+        del disposisi_2
+        del disposisi_3
 
+
+def get_masalah_by_disposisi_1(db: Session, id_disposisi_1: int):
+    try:
+        db_masalah = db.query(Masalah).filter(Masalah.id_level_1 == id_disposisi_1, Masalah.deleted_at == None).all()
+        for masalah in db_masalah:
+            disposisi_1 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_1).first()
+            setattr(masalah, 'disposisi_1', disposisi_1.pegawai if disposisi_1 else None)
+            disposisi_2 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_2).first()
+            setattr(masalah, 'disposisi_2', disposisi_2.pegawai if disposisi_2 else None)
+            disposisi_3 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_3).first()
+            setattr(masalah, 'disposisi_3', disposisi_3.pegawai if disposisi_3 else None)
+        return [True, "sukses", db_masalah]
+    except Exception as e:
+        print(e)
+        db.rollback()
+        return [False, "gagal", []]
+    else:
+        del db_masalah
+        del disposisi_1
+        del disposisi_2
+        del disposisi_3
+def get_masalah_by_disposisi_2(db: Session, id_disposisi_2: int):
+    try:
+        db_masalah = db.query(Masalah).filter(Masalah.id_level_2 == id_disposisi_2, Masalah.deleted_at == None).all()
+        for masalah in db_masalah:
+            disposisi_1 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_1).first()
+            setattr(masalah, 'disposisi_1', disposisi_1.pegawai if disposisi_1 else None)
+            disposisi_2 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_2).first()
+            setattr(masalah, 'disposisi_2', disposisi_2.pegawai if disposisi_2 else None)
+            disposisi_3 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_3).first()
+            setattr(masalah, 'disposisi_3', disposisi_3.pegawai if disposisi_3 else None)
+        return [True, "sukses", db_masalah]
+    except Exception as e:
+        print(e)
+        db.rollback()
+        return [False, "gagal", []]
+    else:
+        del db_masalah
+        del disposisi_1
+        del disposisi_2
+        del disposisi_3
+def get_masalah_by_disposisi_3(db: Session, id_disposisi_3: int):
+    try:
+        db_masalah = db.query(Masalah).filter(Masalah.id_level_3 == id_disposisi_3, Masalah.deleted_at == None).all()
+        for masalah in db_masalah:
+            disposisi_1 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_1).first()
+            setattr(masalah, 'disposisi_1', disposisi_1.pegawai if disposisi_1 else None)
+            disposisi_2 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_2).first()
+            setattr(masalah, 'disposisi_2', disposisi_2.pegawai if disposisi_2 else None)
+            disposisi_3 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_3).first()
+            setattr(masalah, 'disposisi_3', disposisi_3.pegawai if disposisi_3 else None)
+        return [True, "sukses", db_masalah]
+    except Exception as e:
+        print(e)
+        db.rollback()
+        return [False, "gagal", []]
+    else:
+        del db_masalah
+        del disposisi_1
+        del disposisi_2
+        del disposisi_3
+
+
+def update_masalah_by_disposisi_1(db: Session, id_disposisi_1: int):
+    return 0
+def update_masalah_by_disposisi_2(db: Session, id_disposisi_2: int):
+    return 0
+def update_masalah_by_disposisi_3(db: Session, id_disposisi_3: int):
+    return 0
 
 def create_masalah(db: Session, masalah: MasalahCreate):
     db_masalah = Masalah(deskripsi=masalah.deskripsi,

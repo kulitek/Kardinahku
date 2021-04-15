@@ -15,6 +15,7 @@ class UserRegister(UserBase):
 
 class UserRegistered(UserBase):
     api_token: str
+    role: str
 
 class UserLogin(UserBase):
     password: str
