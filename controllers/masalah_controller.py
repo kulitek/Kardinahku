@@ -37,11 +37,16 @@ def get_masalah_by_deskripsi(db: Session, deskripsi: str):
 
 def get_masalah_all(db: Session, user):
     try:
-        return db.query(Masalah).filter(Masalah.deleted_at == None).all()
+        db_masalah = db.query(Masalah).filter(Masalah.deleted_at == None).all()
+        for masalah in db_masalah:
+            masalah.ruangan, masalah.kategori_masalah, masalah.sarana, masalah.tindakan
+        return db_masalah
     except Exception as e:
         print('get_all_masalah',e)
         db.rollback()
         return False
+    else:
+        del db_masalah
 
 
 def get_masalah_by_id(db: Session, id: int):
