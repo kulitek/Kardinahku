@@ -84,7 +84,7 @@ def api_get_all_users(db: Session = Depends(get_db)):
 @app.get("/users/current")
 def api_get_all_users(db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
 
-    try: return {"status": True, "message": "sukses", "data": {"username": current_user.username, "role": current_user.role}}
+    try: return {"status": True, "message": "sukses", "data": {"id": current_user.id, "username": current_user.username, "role": current_user.role}}
     except Exception: return {"status": True, "message": traceback.format_exc(), "data": ""}
 @app.post("/users/role/{id}")
 def api_update_role_by_id(id: int, db: Session = Depends(get_db), code: str = Form(...), # current_user: user_schema.User = Depends(get_current_super_admin),
