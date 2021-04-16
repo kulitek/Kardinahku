@@ -279,18 +279,24 @@ def app_get_masalah(db: Session = Depends(get_db), current_user: user_schema.Use
 @app.get("/masalah/disposisi_1/{disposisi_1}")
 def app_get_masalah_disposisi_1(disposisi_1: int, db: Session = Depends(get_db),
 current_user: user_schema.User = Depends(get_current_admin)):
-    try: return {"status": True, "message": "sukses", "data": get_masalah_by_disposisi_1(db=db, id_disposisi_1=disposisi_1)}
+    response = get_masalah_by_disposisi_1(db=db, id_disposisi_1=disposisi_1)
+    try: return {"status": response[0], "message": response[1], "data": response[2}
     except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
+    else: del response
 @app.get("/masalah/disposisi_2/{disposisi_2}")
 def app_get_masalah_disposisi_2(disposisi_2: int, db: Session = Depends(get_db),
 current_user: user_schema.User = Depends(get_current_sub_admin)):
-    try: return {"status": True, "message": "sukses", "data": get_masalah_by_disposisi_2(db=db, id_disposisi_2=disposisi_2)}
+    response = get_masalah_by_disposisi_2(db=db, id_disposisi_2=disposisi_2)
+    try: return {"status": response[0], "message": response[1], "data": response[2}
     except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
+    else: del response
 @app.get("/masalah/disposisi_3/{disposisi_3}")
 def app_get_masalah_disposisi_3(disposisi_3: int, db: Session = Depends(get_db),
 current_user: user_schema.User = Depends(get_current_operator)):
-    try: return {"status": True, "message": "sukses", "data": get_masalah_by_disposisi_3(db=db, id_disposisi_3=disposisi_3)}
+    response = get_masalah_by_disposisi_3(db=db, id_disposisi_3=disposisi_3)
+    try: return {"status": response[0], "message": response[1], "data": response[2}
     except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
+    else: del response
 @app.post("/masalah/disposisi_1/{disposisi_1}")
 def app_update_masalah_disposisi_1(disposisi_1: int, db: Session = Depends(get_db),
 current_user: user_schema.User = Depends(get_current_admin)):
