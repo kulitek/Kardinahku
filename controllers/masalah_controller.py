@@ -80,6 +80,7 @@ def get_masalah_by_disposisi_1(db: Session, id_disposisi_1: int):
             setattr(masalah, 'disposisi_2', disposisi_2.pegawai if disposisi_2 else None)
             disposisi_3 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_3).first()
             setattr(masalah, 'disposisi_3', disposisi_3.pegawai if disposisi_3 else None)
+            masalah.ruangan, masalah.sarana
         return [True, "sukses", db_masalah]
     except Exception as e:
         print(e)
@@ -100,6 +101,7 @@ def get_masalah_by_disposisi_2(db: Session, id_disposisi_2: int):
             setattr(masalah, 'disposisi_2', disposisi_2.pegawai if disposisi_2 else None)
             disposisi_3 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_3).first()
             setattr(masalah, 'disposisi_3', disposisi_3.pegawai if disposisi_3 else None)
+            masalah.ruangan, masalah.sarana
         return [True, "sukses", db_masalah]
     except Exception as e:
         print(e)
@@ -120,6 +122,7 @@ def get_masalah_by_disposisi_3(db: Session, id_disposisi_3: int):
             setattr(masalah, 'disposisi_2', disposisi_2.pegawai if disposisi_2 else None)
             disposisi_3 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_3).first()
             setattr(masalah, 'disposisi_3', disposisi_3.pegawai if disposisi_3 else None)
+            masalah.ruangan, masalah.sarana
         return [True, "sukses", db_masalah]
     except Exception as e:
         print(e)
