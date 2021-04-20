@@ -331,14 +331,14 @@ def app_update_masalah(id: int, deskripsi: Optional[str] = Form(None), id_ruanga
                 id_level_1: Optional[int] = Form(None), id_level_2: Optional[int] = Form(None),
                 id_level_3: Optional[int] = Form(None), id_sarana: Optional[int] = Form(None),
                 id_kategori_masalah: Optional[int] = Form(None), foto: Optional[UploadFile] = File(None),
-                status: Optional[bool] = Form(None), # id_user: int = Form(None),
+                foto_selesai: Optional[UploadFile] = File(None), status: Optional[bool] = Form(None), # id_user: int = Form(None),
                 current_user: user_schema.User = Depends(get_current_user),
                 db: Session = Depends(get_db)):
     response = None
     try:
         masalah = MasalahUpdate(id=id,deskripsi=deskripsi, id_sarana=id_sarana,
         id_level_1=id_level_1, id_level_2=id_level_2, id_level_3=id_level_3, status=status,
-        id_kategori_masalah=id_kategori_masalah,id_ruangan=id_ruangan,foto=foto)
+        id_kategori_masalah=id_kategori_masalah,id_ruangan=id_ruangan,foto=foto,foto_selesai=foto_selesai)
         response = update_masalah(db=db,masalah=masalah)
         del masalah
         return {"status": response[0], "message": response[1], "data": response[2]}

@@ -1,7 +1,12 @@
+import os, sys
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
+
 from typing import List, Optional, Dict
 from pydantic import BaseModel, Field
 from datetime import datetime
 from fastapi import UploadFile
+from schemas.pegawai_schema import PegawaiInfo
 
 
 class MasalahBase(BaseModel):
@@ -24,7 +29,12 @@ class MasalahUpdate(MasalahBase):
     id_ruangan: Optional[int]
     id_sarana: Optional[int]
     status: Optional[bool]
+    done_at: Optional[datetime]
     foto: Optional[UploadFile]
+    foto_selesai: Optional[UploadFile]
+    disposisi_1: Optional[PegawaiInfo]
+    disposisi_2: Optional[PegawaiInfo]
+    disposisi_3: Optional[PegawaiInfo]
 
 class MasalahInfo(MasalahBase):
     id: Optional[int]

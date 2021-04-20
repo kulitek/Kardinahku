@@ -140,6 +140,7 @@ class Masalah(Base):
     id_level_3 = Column(Integer, nullable=True)
     status = Column(Boolean, default=False)
     foto = Column(String, nullable=True)
+    foto_selesai = Column(String, nullable=True)
 
 
     created_at = Column(DateTime, default=datetime.now)

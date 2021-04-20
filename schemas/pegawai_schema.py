@@ -5,11 +5,17 @@ from .user_schema import *
 
 
 class PegawaiBase(BaseModel):
-    __repr_hide = ['created_at', 'updated_at',]
-    nama_lengkap: str
+    __repr_hide = ['created_at', 'update_at', 'deleted_at']
+    nama_lengkap: Optional[str]
     tempat_lahir: Optional[str]
-    jenis_kelamin: str
-    tanggal_lahir: datetime
+    jenis_kelamin: Optional[str]
+    tanggal_lahir: Optional[datetime]
+    no_hp: Optional[str]
+    no_wa: Optional[str]
+
+class PegawaiInfo(PegawaiBase):
+    id: Optional[int]
+    nama_panggilan: Optional[str]
 
 class Pegawai(PegawaiBase):
     id: str

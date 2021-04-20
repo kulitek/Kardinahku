@@ -178,6 +178,7 @@ def update_masalah(db: Session, masalah: MasalahUpdate):
     db_masalah.status = masalah.status if masalah.status else db_masalah.status
     db_masalah.done_at = datetime.now() if masalah.status else None
     db_masalah.foto = put_file(masalah.foto, db_masalah.foto) if masalah.foto else db_masalah.foto
+    db_masalah.foto_selesai = put_file(masalah.foto_selesai, db_masalah.foto_selesai) if masalah.foto_selesai else db_masalah.foto_selesai
     try:
         db.commit()
         db.refresh(db_masalah)
