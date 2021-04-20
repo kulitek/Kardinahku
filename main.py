@@ -115,7 +115,7 @@ def app_login_user(username: str = Form(...), password: str = Form(...), db: Ses
         else:
             access_token = create_permanent_access_token(data={"sub": username}, db=db)
             return {"status": True, "message": "sukses", "data": vars(
-                    user_schema.UserRegistered(username=username,api_token=access_token,role=db_user.role))}
+                    user_schema.UserRegistered(username=username,api_token=access_token,role=db_user.role,id=db_user.id))}
 @app.post("/register")
 def app_registering_user(username: str = Form(...), password: str = Form(...),
                      email: str = Form(...), id_pegawai: str = Form(...),

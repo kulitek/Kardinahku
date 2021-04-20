@@ -14,6 +14,7 @@ class UserRegister(UserBase):
     role: Optional[str]
 
 class UserRegistered(UserBase):
+    id: int
     api_token: str
     role: str
 
