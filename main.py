@@ -363,7 +363,7 @@ def app_update_masalah(id: int, deskripsi: Optional[str] = Form(None), id_ruanga
         response = update_masalah(db=db,masalah=masalah)
         del masalah
         return {"status": response[0], "message": response[1], "data": response[2]}
-    except Exception as e: raise HTTPException(status_code = sts.HTTP_410_GONE,detail="Error = " + str(e))
+    except Exception as e: raise HTTPException(status_code = sts.HTTP_410_GONE,detail="Error = " + traceback.format_exc())
     finally: del response
 @app.delete("/masalah/{id}")
 async def delete_masalah_id(id: str, db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):

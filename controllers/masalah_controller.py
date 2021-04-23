@@ -9,6 +9,7 @@ from schemas.masalah_schema import *
 import bcrypt, string, random
 import pathlib as pl
 from datetime import datetime, timedelta
+import traceback
 
 MASALAH_PATH = r'assets/masalah/'
 
@@ -22,8 +23,11 @@ def create_file(foto: UploadFile):
     return r'{}{}'.format(MASALAH_PATH, new_name)
 
 def put_file(foto: UploadFile, old_name):
-    pl.Path(r'{}'.format(old_name)).unlink()
-    return create_file(foto)
+    try: pl.Path(r'{}'.format(old_name)).unlink()
+    except Exception as e:
+        print("masalah_controller put_file = " + traceback.format_exc())
+        pass
+    finally: return create_file(foto)
 
 def get_masalah_by_deskripsi(db: Session, deskripsi: str):
     try:
@@ -168,17 +172,20 @@ def create_masalah(db: Session, masalah: MasalahCreate):
 
 def update_masalah(db: Session, masalah: MasalahUpdate):
     db_masalah = db.query(Masalah).filter(Masalah.id == masalah.id, Masalah.deleted_at == None).first()
-    db_masalah.deskripsi = masalah.deskripsi if masalah.deskripsi else db_masalah.deskripsi
-    db_masalah.id_ruangan = masalah.id_ruangan if masalah.id_ruangan else db_masalah.id_ruangan
-    db_masalah.id_kategori_masalah = masalah.id_kategori_masalah if masalah.id_kategori_masalah else db_masalah.id_kategori_masalah
-    db_masalah.id_sarana = masalah.id_sarana if masalah.id_sarana else db_masalah.id_sarana
-    db_masalah.id_level_1 = masalah.id_level_1 if masalah.id_level_1 else db_masalah.id_level_1
-    db_masalah.id_level_2 = masalah.id_level_2 if masalah.id_level_2 else db_masalah.id_level_2
-    db_masalah.id_level_3 = masalah.id_level_3 if masalah.id_level_3 else db_masalah.id_level_3
-    db_masalah.status = masalah.status if masalah.status else db_masalah.status
-    db_masalah.done_at = datetime.now() if masalah.status else None
-    db_masalah.foto = put_file(masalah.foto, db_masalah.foto) if masalah.foto else db_masalah.foto
-    db_masalah.foto_selesai = put_file(masalah.foto_selesai, db_masalah.foto_selesai) if masalah.foto_selesai else db_masalah.foto_selesai
+    if db_masalah:
+        db_masalah.deskripsi = masalah.deskripsi if masalah.deskripsi else db_masalah.deskripsi
+        db_masalah.id_ruangan = masalah.id_ruangan if masalah.id_ruangan else db_masalah.id_ruangan
+        db_masalah.id_kategori_masalah = masalah.id_kategori_masalah if masalah.id_kategori_masalah else db_masalah.id_kategori_masalah
+        db_masalah.id_sarana = masalah.id_sarana if masalah.id_sarana else db_masalah.id_sarana
+        db_masalah.id_level_1 = masalah.id_level_1 if masalah.id_level_1 else db_masalah.id_level_1
+        db_masalah.id_level_2 = masalah.id_level_2 if masalah.id_level_2 else db_masalah.id_level_2
+        db_masalah.id_level_3 = masalah.id_level_3 if masalah.id_level_3 else db_masalah.id_level_3
+        db_masalah.status = masalah.status if masalah.status else db_masalah.status
+        db_masalah.done_at = datetime.now() if masalah.status else None
+        db_masalah.foto = put_file(masalah.foto, db_masalah.foto) if masalah.foto else db_masalah.foto
+        db_masalah.foto_selesai = put_file(masalah.foto_selesai, db_masalah.foto_selesai) if masalah.foto_selesai else db_masalah.foto_selesai
+    else:
+        return [True, "Masalah tidak ditemukan", db_masalah]
     try:
         db.commit()
         db.refresh(db_masalah)
