@@ -62,7 +62,7 @@ def get_masalah_baru(db: Session, user):
             setattr(masalah, 'disposisi_2', disposisi_2.pegawai if disposisi_2 else None)
             disposisi_3 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_3).first()
             setattr(masalah, 'disposisi_3', disposisi_3.pegawai if disposisi_3 else None)
-            masalah.ruangan, masalah.kategori_masalah, masalah.sarana, masalah.tindakan
+            masalah.ruangan, masalah.kategori_masalah, masalah.sarana
         return [True, "sukses", db_masalah]
     except Exception as e:
         print('get_all_masalah ', traceback.format_exc())
