@@ -95,7 +95,8 @@ def get_masalah_by_id(db: Session, id: int):
 
 def get_masalah_by_disposisi_1(db: Session, id_disposisi_1: int):
     try:
-        db_masalah = db.query(Masalah).filter(Masalah.id_level_1 == id_disposisi_1, Masalah.deleted_at == None).all()
+        db_masalah = db.query(Masalah).filter(Masalah.id_level_1 == id_disposisi_1,
+        Masalah.deleted_at == None, Masalah.id_level_2 == None, Masalah.id_level_3 == None).all()
         for masalah in db_masalah:
             disposisi_1 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_1).first()
             setattr(masalah, 'disposisi_1', disposisi_1.pegawai if disposisi_1 else None)
@@ -116,7 +117,8 @@ def get_masalah_by_disposisi_1(db: Session, id_disposisi_1: int):
         del disposisi_3
 def get_masalah_by_disposisi_2(db: Session, id_disposisi_2: int):
     try:
-        db_masalah = db.query(Masalah).filter(Masalah.id_level_2 == id_disposisi_2, Masalah.deleted_at == None).all()
+        db_masalah = db.query(Masalah).filter(Masalah.id_level_2 == id_disposisi_2,
+        Masalah.deleted_at == None, Masalah.id_level_3 == None).all()
         for masalah in db_masalah:
             disposisi_1 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_1).first()
             setattr(masalah, 'disposisi_1', disposisi_1.pegawai if disposisi_1 else None)
@@ -137,7 +139,8 @@ def get_masalah_by_disposisi_2(db: Session, id_disposisi_2: int):
         del disposisi_3
 def get_masalah_by_disposisi_3(db: Session, id_disposisi_3: int):
     try:
-        db_masalah = db.query(Masalah).filter(Masalah.id_level_3 == id_disposisi_3, Masalah.deleted_at == None).all()
+        db_masalah = db.query(Masalah).filter(Masalah.id_level_3 == id_disposisi_3, Masalah.deleted_at == None,
+        Masalah.id_level_1 != None, Masalah.id_level_2 != None).all()
         for masalah in db_masalah:
             disposisi_1 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_1).first()
             setattr(masalah, 'disposisi_1', disposisi_1.pegawai if disposisi_1 else None)
