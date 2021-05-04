@@ -36,6 +36,22 @@ class MasalahUpdate(MasalahBase):
     disposisi_2: Optional[PegawaiInfo]
     disposisi_3: Optional[PegawaiInfo]
 
+class MasalahSearch(MasalahBase):
+    id: Optional[int]
+    id_level_1: Optional[int]
+    id_level_2: Optional[int]
+    id_level_3: Optional[int]
+    id_kategori_masalah: Optional[int]
+    id_ruangan: Optional[int]
+    id_sarana: Optional[int]
+    status: Optional[bool]
+    done_at: Optional[datetime]
+    foto: Optional[UploadFile]
+    foto_selesai: Optional[UploadFile]
+    disposisi_1: Optional[PegawaiInfo]
+    disposisi_2: Optional[PegawaiInfo]
+    disposisi_3: Optional[PegawaiInfo]
+
 class MasalahInfo(MasalahBase):
     id: Optional[int]
     id_user: Optional[int]

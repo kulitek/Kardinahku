@@ -26,7 +26,7 @@ from controllers.tindakan_controller import *
 import schemas.user_schema as user_schema, schemas.pegawai_schema as pegawai_schema
 from schemas.instalasi_schema import InstalasiGetAll
 from schemas.sarana_schema import SaranaCreate, SaranaUpdate
-from schemas.masalah_schema import MasalahCreate, MasalahUpdate
+from schemas.masalah_schema import MasalahCreate, MasalahUpdate, MasalahSearch
 from database import engine, SessionLocal
 
 
@@ -355,13 +355,31 @@ def app_update_masalah(id: int, deskripsi: Optional[str] = Form(None), id_ruanga
         return {"status": response[0], "message": response[1], "data": response[2]}
     except Exception as e: raise HTTPException(status_code = sts.HTTP_410_GONE,detail="Error = " + traceback.format_exc())
     finally: del response
+@app.post("/masalah/search")
+def app_search_masalah_by_column(id: Optional[int] = Form(None), deskripsi: Optional[str] = Form(None), id_ruangan: Optional[int] = Form(None),
+                id_level_1: Optional[int] = Form(None), id_level_2: Optional[int] = Form(None),
+                id_level_3: Optional[int] = Form(None), id_sarana: Optional[int] = Form(None),
+                id_kategori_masalah: Optional[int] = Form(None), foto: Optional[UploadFile] = File(None),
+                foto_selesai: Optional[UploadFile] = File(None), status: Optional[bool] = Form(None), # id_user: int = Form(None),
+                # current_user: user_schema.User = Depends(get_current_user),
+                db: Session = Depends(get_db)):
+    response = None
+    try:
+        masalah = MasalahSearch(id=id,deskripsi=deskripsi, id_sarana=id_sarana,
+        id_level_1=id_level_1, id_level_2=id_level_2, id_level_3=id_level_3, status=status,
+        id_kategori_masalah=id_kategori_masalah,id_ruangan=id_ruangan,foto=foto,foto_selesai=foto_selesai)
+        response = search_masalah_by_column(db=db,masalah=masalah)
+        del masalah
+        return {"status": response[0], "message": response[1], "data": response[2]}
+    except Exception as e: return {"status": False, "message": "Error: " + traceback.format_exc(), "data": []}
+    finally: del response
 @app.delete("/masalah/{id}")
 async def delete_masalah_id(id: str, db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):
     response = None
     try:
         response = delete_masalah_by_id(db=db, id=id)
         return {"status": response[0], "message": response[1], "data": response[2]}
-    except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
+    except Exception as e: return {"status": False, "message": "Error: " + traceback.format_exc(), "data": []}
     finally: del response
 @app.get("/masalah/{key}")
 async def search_masalah_flexible(key: str, db: Session = Depends(get_db), current_user: user_schema.User = Depends(get_current_user)):

@@ -266,3 +266,30 @@ def search_masalah_by_disposisi(db: Session, key: str):
         print(traceback.format_exc())
         db.rollback()
         return [False, "gagal", []]
+
+def search_masalah_by_column(db: Session, masalah: MasalahSearch):
+    try:
+        db_masalah = db.query(Masalah)
+        if masalah.deskripsi != None: db_masalah.filter(Masalah.deskripsi == masalah.deskripsi)
+        if masalah.id_ruangan != None: db_masalah.filter(Masalah.id_ruangan == masalah.id_ruangan)
+        if masalah.id_kategori_masalah != None: db_masalah.filter(Masalah.id_kategori_masalah == masalah.id_kategori_masalah)
+        if masalah.id_sarana != None: db_masalah.filter(Masalah.id_sarana == masalah.id_sarana)
+        if masalah.id_level_1 != None: db_masalah.filter(Masalah.id_disposisi_1 == masalah.id_disposisi_1)
+        if masalah.id_level_2 != None: db_masalah.filter(Masalah.id_disposisi_2 == masalah.id_disposisi_2)
+        if masalah.id_level_3 != None: db_masalah.filter(Masalah.id_disposisi_3 == masalah.id_disposisi_3)
+        if masalah.status != None: db_masalah.filter(Masalah.status == masalah.status)
+        db_masalah = db_masalah.all()
+        for masalah in db_masalah:
+            disposisi_1 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_1).first()
+            setattr(masalah, 'disposisi_1', disposisi_1.pegawai if disposisi_1 else None)
+            disposisi_2 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_2).first()
+            setattr(masalah, 'disposisi_2', disposisi_2.pegawai if disposisi_2 else None)
+            disposisi_3 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_3).first()
+            setattr(masalah, 'disposisi_3', disposisi_3.pegawai if disposisi_3 else None)
+            masalah.ruangan, masalah.sarana, masalah.kategori_masalah
+        return [True, "sukses", db_masalah]
+    except Exception as e:
+        print(traceback.format_exc())
+        db.rollback()
+        return [False, "gagal", []]
+    else: del db_masalah
