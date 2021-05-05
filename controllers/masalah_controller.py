@@ -160,6 +160,42 @@ def get_masalah_by_disposisi_3(db: Session, id_disposisi_3: int):
         del disposisi_2
         del disposisi_3
 
+def get_masalah_by_status(db: Session, status: str, user_type: str = None, id_user: int = None):
+    try:
+        status = True if status == "1" else False
+        if id_user != None and user_type == "disposisi_1":
+            db_masalah = db.query(Masalah).filter(Masalah.status == status,
+            Masalah.id_level_1 == id_user, Masalah.deleted_at == None).all()
+        elif id_user != None and user_type == "disposisi_2":
+            db_masalah = db.query(Masalah).filter(Masalah.status == status,
+            Masalah.id_level_2 == id_user, Masalah.deleted_at == None).all()
+        elif id_user != None and user_type == "disposisi_3":
+            db_masalah = db.query(Masalah).filter(Masalah.status == status,
+            Masalah.id_level_3 == id_user, Masalah.deleted_at == None).all()
+        elif id_user != None and user_type == "pelapor":
+            db_masalah = db.query(Masalah).filter(Masalah.status == status,
+            Masalah.id_user == id_user, Masalah.deleted_at == None).all()
+        else:
+            db_masalah = db.query(Masalah).filter(Masalah.status == status, Masalah.deleted_at == None).all()
+        for masalah in db_masalah:
+            disposisi_1 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_1).first()
+            setattr(masalah, 'disposisi_1', disposisi_1.pegawai if disposisi_1 else None)
+            disposisi_2 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_2).first()
+            setattr(masalah, 'disposisi_2', disposisi_2.pegawai if disposisi_2 else None)
+            disposisi_3 = db.query(User).filter(User.deleted_at == None, User.id == masalah.id_level_3).first()
+            setattr(masalah, 'disposisi_3', disposisi_3.pegawai if disposisi_3 else None)
+            masalah.ruangan, masalah.sarana, masalah.kategori_masalah
+        return [True, "sukses", db_masalah]
+    except Exception as e:
+        print(traceback.format_exc())
+        db.rollback()
+        return [False, "gagal", []]
+    else:
+        del db_masalah
+        del disposisi_1
+        del disposisi_2
+        del disposisi_3
+
 
 def update_masalah_by_disposisi_1(db: Session, id_disposisi_1: int):
     return 0
