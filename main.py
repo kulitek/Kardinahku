@@ -323,6 +323,41 @@ current_user: user_schema.User = Depends(get_current_operator)):
     try: return {"status": response[0], "message": response[1], "data": response[2]}
     except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
     else: del response
+@app.get("/masalah/status/{status}")
+def app_get_masalah_status_all(status: str, db: Session = Depends(get_db),
+current_user: user_schema.User = Depends(get_current_user)):
+    response = get_masalah_by_status(db=db, status=status)
+    try: return {"status": response[0], "message": response[1], "data": response[2]}
+    except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
+    else: del response
+@app.get("/masalah/disposisi_1/status/{status}")
+def app_get_masalah_status_all(status: str, db: Session = Depends(get_db),
+current_user: user_schema.User = Depends(get_current_admin)):
+    response = get_masalah_by_status(db=db, status=status, user_type="disposisi_1", id_user=current_user.id)
+    try: return {"status": response[0], "message": response[1], "data": response[2]}
+    except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
+    else: del response
+@app.get("/masalah/disposisi_2/status/{status}")
+def app_get_masalah_status_all(status: str, db: Session = Depends(get_db),
+current_user: user_schema.User = Depends(get_current_sub_admin)):
+    response = get_masalah_by_status(db=db, status=status, user_type="disposisi_2", id_user=current_user.id)
+    try: return {"status": response[0], "message": response[1], "data": response[2]}
+    except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
+    else: del response
+@app.get("/masalah/disposisi_3/status/{status}")
+def app_get_masalah_status_all(status: str, db: Session = Depends(get_db),
+current_user: user_schema.User = Depends(get_current_operator)):
+    response = get_masalah_by_status(db=db, status=status, user_type="disposisi_3", id_user=current_user.id)
+    try: return {"status": response[0], "message": response[1], "data": response[2]}
+    except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
+    else: del response
+@app.get("/masalah/pelapor/status/{status}")
+def app_get_masalah_status_all(status: str, db: Session = Depends(get_db),
+current_user: user_schema.User = Depends(get_current_user)):
+    response = get_masalah_by_status(db=db, status=status, user_type="pelapor", id_user=current_user.id)
+    try: return {"status": response[0], "message": response[1], "data": response[2]}
+    except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
+    else: del response
 @app.post("/masalah")
 def app_create_masalah(deskripsi: str = Form(...), id_ruangan: int = Form(...), id_sarana: int = Form(...),
                 id_kategori_masalah: int = Form(...), foto: Optional[UploadFile] = File(None),
