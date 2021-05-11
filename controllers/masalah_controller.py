@@ -173,8 +173,7 @@ def get_masalah_by_status(db: Session, status: str, user_type: str = None, id_us
             db_masalah = db.query(Masalah).filter(Masalah.status == status,
             Masalah.id_level_3 == id_user, Masalah.deleted_at == None).all()
         elif id_user != None and user_type == "pelapor":
-            db_masalah = db.query(Masalah).filter(Masalah.status == status,
-            Masalah.id_user == id_user, Masalah.deleted_at == None).all()
+            db_masalah = db.query(Masalah).filter(Masalah.id_user == id_user, Masalah.deleted_at == None).all()
         else:
             db_masalah = db.query(Masalah).filter(Masalah.status == status, Masalah.deleted_at == None).all()
         for masalah in db_masalah:
