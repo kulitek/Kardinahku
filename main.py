@@ -352,9 +352,9 @@ current_user: user_schema.User = Depends(get_current_operator)):
     except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
     else: del response
 @app.get("/masalah/pelapor/")
-def app_get_masalah_status_all(status: str, db: Session = Depends(get_db),
+def app_get_masalah_status_all(db: Session = Depends(get_db),
 current_user: user_schema.User = Depends(get_current_user)):
-    response = get_masalah_by_status(db=db, status=status, user_type="pelapor", id_user=current_user.id)
+    response = get_masalah_by_status(db=db, status="1", user_type="pelapor", id_user=current_user.id)
     try: return {"status": response[0], "message": response[1], "data": response[2]}
     except Exception as e: return {"status": False, "message": "Error: " + str(e), "data": []}
     else: del response
